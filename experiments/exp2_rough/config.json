@@ -1,0 +1,6 @@
+{
+  "name": "Exp 2: Rough Rubric (Zero-to-Analytic)",
+  "max_cycles": 15,
+  "dynamic_criteria": true,
+  "criterion_codes": ["C1", "C2", "C3"]
+}

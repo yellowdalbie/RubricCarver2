@@ -1,0 +1,15 @@
+node_modules/
+.DS_Store
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+.env
+.claude/
+temp_script.js
+current_script.js
+test_*.py
+test_*.js
+fix_*.py
+fix_*.js
+dump_*.js

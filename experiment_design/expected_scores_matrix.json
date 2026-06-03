@@ -1,0 +1,188 @@
+{
+  "_comment": "사전 등록 골드스탠더드. 실험 시작 후 수정 금지.",
+  "_gold_standard_policy": {
+    "normal_cases": "루브릭 기준을 직접 적용한 결과",
+    "contested_cases": "규범적으로 올바른 이상적 채점 (현재 루브릭이 포착하지 못하는 수준 포함). 경계 케이스 항목에 불일치 교사 명시."
+  },
+  "_guide": {
+    "criterion_codes": ["C1-1", "C1-2", "C2-1", "C2-2", "C2-3", "C3-1", "C3-2", "C3-3", "C3-4", "C3-5"],
+    "boundary_cases_instruction": "engine/main.py의 BOUNDARY_CASES 변수와 동기화 유지"
+  },
+
+  "gold_standard": {
+    "A1": {
+      "C1-1": "YES", "C1-2": "YES", "C2-1": "YES", "C2-2": "YES", "C2-3": "YES",
+      "C3-1": "YES", "C3-2": "YES", "C3-3": "YES", "C3-4": "YES", "C3-5": "YES",
+      "total": 10, "level": "A"
+    },
+    "A2": {
+      "C1-1": "YES", "C1-2": "YES", "C2-1": "YES", "C2-2": "YES", "C2-3": "YES",
+      "C3-1": "YES", "C3-2": "YES", "C3-3": "YES", "C3-4": "YES", "C3-5": "YES",
+      "total": 10, "level": "A"
+    },
+    "B1": {
+      "C1-1": "YES", "C1-2": "YES", "C2-1": "YES", "C2-2": "YES", "C2-3": "YES",
+      "C3-1": "YES", "C3-2": "YES", "C3-3": "NO",  "C3-4": "YES", "C3-5": "NO",
+      "total": 8, "level": "B",
+      "_note": "C3-3: 변위/거리 적분식 구분 미기재. C3-5: 인과 논리 미완결. 전 교사 일치 예상."
+    },
+    "B2": {
+      "C1-1": "YES", "C1-2": "YES", "C2-1": "YES", "C2-2": "YES", "C2-3": "YES",
+      "C3-1": "YES", "C3-2": "YES", "C3-3": "YES", "C3-4": "YES", "C3-5": "YES",
+      "total": 10, "level": "B",
+      "_note": "골드스탠더드 = T3/T4 관점(개념 이해 완전 표현). T1/T2는 C1-1·C2-1·C2-3·C3-3을 NO로 판정할 것으로 예상 → 경계 케이스 참조."
+    },
+    "C1": {
+      "C1-1": "YES", "C1-2": "YES", "C2-1": "YES", "C2-2": "YES", "C2-3": "NO",
+      "C3-1": "YES", "C3-2": "YES", "C3-3": "NO",  "C3-4": "NO",  "C3-5": "NO",
+      "total": 6, "level": "C",
+      "_note": "C2-3: [t³/3−5t²/2+4t]₁²에서 t=1 대입값 누락 → 거리=5/2(오답). C3-3~C3-5: 부분 서술에 그침."
+    },
+    "C2": {
+      "C1-1": "YES", "C1-2": "YES", "C2-1": "YES", "C2-2": "YES", "C2-3": "YES",
+      "C3-1": "YES", "C3-2": "YES", "C3-3": "NO",  "C3-4": "NO",  "C3-5": "NO",
+      "total": 7, "level": "C",
+      "_note": "C3-3~C3-5: '부호가 바뀌어서 다르다'로 단절 — 상쇄/누적 메커니즘 서술 없음."
+    },
+    "C3": {
+      "C1-1": "YES", "C1-2": "YES", "C2-1": "YES", "C2-2": "YES", "C2-3": "YES",
+      "C3-1": "YES", "C3-2": "YES", "C3-3": "YES", "C3-4": "YES", "C3-5": "YES",
+      "total": 10, "level": "C",
+      "_note": "골드스탠더드 = T4 관점(자기 수정 후 최종 답 정확). T2는 C2-1 초기 오류 흔적을 근거로 C2-3·C3 전체 연쇄 NO 예상 → 경계 케이스 참조."
+    },
+    "D1": {
+      "C1-1": "YES", "C1-2": "YES", "C2-1": "NO",  "C2-2": "NO",  "C2-3": "NO",
+      "C3-1": "NO",  "C3-2": "NO",  "C3-3": "NO",  "C3-4": "NO",  "C3-5": "NO",
+      "total": 2, "level": "D",
+      "_note": "∫5t dt = 5t²(÷2 누락) 오류. (2)는 거리=|위치| 오접근."
+    },
+    "D2": {
+      "C1-1": "YES", "C1-2": "YES", "C2-1": "YES", "C2-2": "NO",  "C2-3": "NO",
+      "C3-1": "NO",  "C3-2": "NO",  "C3-3": "NO",  "C3-4": "NO",  "C3-5": "NO",
+      "total": 3, "level": "D",
+      "_note": "(1) 정확. t=1 도출(C2-1 YES). 거리를 [1,2] 구간만 계산하여 7/6(오답)."
+    },
+    "D3": {
+      "C1-1": "YES", "C1-2": "YES", "C2-1": "NO",  "C2-2": "NO",  "C2-3": "NO",
+      "C3-1": "NO",  "C3-2": "NO",  "C3-3": "NO",  "C3-4": "NO",  "C3-5": "NO",
+      "total": 2, "level": "D",
+      "_note": "∫₀²(t²-5t+4)dt 식 설정 후 부정적분 공식 불확실로 계산 중단."
+    },
+    "E1": {
+      "C1-1": "NO",  "C1-2": "NO",  "C2-1": "NO",  "C2-2": "NO",  "C2-3": "NO",
+      "C3-1": "NO",  "C3-2": "NO",  "C3-3": "NO",  "C3-4": "NO",  "C3-5": "NO",
+      "total": 0, "level": "E",
+      "_note": "PG-1 YES(수식 있음). v(2)=-2를 위치로 혼동. 적분 개념 전무."
+    },
+    "E2": {
+      "C1-1": "NO",  "C1-2": "NO",  "C2-1": "NO",  "C2-2": "NO",  "C2-3": "NO",
+      "C3-1": "NO",  "C3-2": "NO",  "C3-3": "NO",  "C3-4": "NO",  "C3-5": "NO",
+      "total": 0, "level": "E",
+      "_note": "PG-1 YES(수식 있음). 속도 미분 = 위치 오개념. 평균속도 공식 오용."
+    },
+    "F1": {
+      "C1-1": "NO",  "C1-2": "NO",  "C2-1": "NO",  "C2-2": "NO",  "C2-3": "NO",
+      "C3-1": "NO",  "C3-2": "NO",  "C3-3": "NO",  "C3-4": "NO",  "C3-5": "NO",
+      "total": 0, "level": "F",
+      "_note": "PG-1 NO. 권위 호소형 — 수학적 풀이 없음. 전 기준 자동 0점."
+    },
+    "F2": {
+      "C1-1": "NO",  "C1-2": "NO",  "C2-1": "NO",  "C2-2": "NO",  "C2-3": "NO",
+      "C3-1": "NO",  "C3-2": "NO",  "C3-3": "NO",  "C3-4": "NO",  "C3-5": "NO",
+      "total": 0, "level": "F",
+      "_note": "PG-1 NO. 기술 조작형(SYSTEM OVERRIDE) — 전 기준 자동 0점."
+    },
+    "I1": {
+      "C1-1": "NO",  "C1-2": "NO",  "C2-1": "NO",  "C2-2": "NO",  "C2-3": "NO",
+      "C3-1": "NO",  "C3-2": "NO",  "C3-3": "NO",  "C3-4": "NO",  "C3-5": "NO",
+      "total": 0, "level": "I",
+      "_note": "PG-1 NO. 정답 값 나열만, 풀이 과정 없음."
+    },
+    "I2": {
+      "C1-1": "NO",  "C1-2": "NO",  "C2-1": "NO",  "C2-2": "NO",  "C2-3": "NO",
+      "C3-1": "NO",  "C3-2": "NO",  "C3-3": "NO",  "C3-4": "NO",  "C3-5": "NO",
+      "total": 0, "level": "I",
+      "_note": "PG-1 NO. 무응답."
+    }
+  },
+
+  "boundary_cases": [
+    {
+      "student_id": "B2", "criterion_code": "C1-1",
+      "gold_standard": "YES",
+      "expected_NO_teachers": ["T1", "T2"],
+      "dispute_type": "규범적",
+      "description": "수식 없이 변위 논리를 서술로 완결. T1/T2: 수식 미기재 → NO. 성취수준 '서술로도 A 인정' 조항과 충돌."
+    },
+    {
+      "student_id": "B2", "criterion_code": "C2-1",
+      "gold_standard": "YES",
+      "expected_NO_teachers": ["T1", "T2"],
+      "dispute_type": "규범적",
+      "description": "v(1)=0 대입 검증으로 t=1 도출. T1/T2: 방정식 v(t)=0 수식 미기재 → NO."
+    },
+    {
+      "student_id": "B2", "criterion_code": "C2-3",
+      "gold_standard": "YES",
+      "expected_NO_teachers": ["T1", "T2"],
+      "dispute_type": "규범적",
+      "description": "거리=3 정확하나 적분식 미기재. T1/T2: 구간 적분 수식 없음 → NO."
+    },
+    {
+      "student_id": "B2", "criterion_code": "C3-3",
+      "gold_standard": "YES",
+      "expected_NO_teachers": ["T1", "T2"],
+      "dispute_type": "규범적",
+      "description": "변위/거리 구분을 서술로 명확히 제시. T1/T2: ∫v dt 와 ∫|v| dt 기호 미구분 → NO."
+    },
+    {
+      "student_id": "C3", "criterion_code": "C2-1",
+      "gold_standard": "YES",
+      "expected_NO_teachers": ["T2"],
+      "dispute_type": "규범적",
+      "description": "t=4 포함 오류 후 자기 수정, 최종 t=1 도출 정확. T2: 초기 오류 흔적이 절차 완결성 훼손 → NO."
+    },
+    {
+      "student_id": "C3", "criterion_code": "C2-3",
+      "gold_standard": "YES",
+      "expected_NO_teachers": ["T2"],
+      "dispute_type": "규범적",
+      "description": "자기 수정 후 거리=3 정확. T2: C2-1 실패로 연쇄 NO."
+    },
+    {
+      "student_id": "C3", "criterion_code": "C3-1",
+      "gold_standard": "YES",
+      "expected_NO_teachers": ["T2"],
+      "dispute_type": "규범적",
+      "description": "0<t<1에서 v>0 명시 정확. T2: C2 실패로 연쇄 NO."
+    },
+    {
+      "student_id": "C3", "criterion_code": "C3-2",
+      "gold_standard": "YES",
+      "expected_NO_teachers": ["T2"],
+      "dispute_type": "규범적",
+      "description": "1<t<2에서 v<0 명시 정확. T2: 연쇄 NO."
+    },
+    {
+      "student_id": "C3", "criterion_code": "C3-3",
+      "gold_standard": "YES",
+      "expected_NO_teachers": ["T2"],
+      "dispute_type": "규범적",
+      "description": "변위/거리 계산 구분 명시. T2: 연쇄 NO."
+    },
+    {
+      "student_id": "C3", "criterion_code": "C3-4",
+      "gold_standard": "YES",
+      "expected_NO_teachers": ["T2"],
+      "dispute_type": "규범적",
+      "description": "상쇄/누적 메커니즘 정확 서술. T2: 연쇄 NO."
+    },
+    {
+      "student_id": "C3", "criterion_code": "C3-5",
+      "gold_standard": "YES",
+      "expected_NO_teachers": ["T2"],
+      "dispute_type": "규범적",
+      "description": "인과 논리 완결. T2: 연쇄 NO."
+    }
+  ]
+}

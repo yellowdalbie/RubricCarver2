@@ -1,0 +1,6 @@
+{
+  "name": "Exp 1: Analytic Rubric",
+  "max_cycles": 10,
+  "dynamic_criteria": false,
+  "criterion_codes": ["C1-1", "C1-2", "C2-1", "C2-2", "C2-3", "C3-1", "C3-2", "C3-3", "C3-4", "C3-5"]
+}

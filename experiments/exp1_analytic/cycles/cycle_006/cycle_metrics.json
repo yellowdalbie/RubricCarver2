@@ -1,0 +1,161 @@
+{
+  "cycle": 6,
+  "timestamp": "2026-05-25T12:30:34.627753",
+  "fleiss_kappa_overall": 0.9222,
+  "fleiss_kappa_by_criterion": {
+    "C1-1": 0.8468,
+    "C1-2": 0.9321,
+    "C2-1": 0.9374,
+    "C2-2": 0.9359,
+    "C2-3": 0.9344,
+    "C3-1": 0.9344,
+    "C3-2": 0.9344,
+    "C3-3": 0.8615,
+    "C3-4": 0.9291,
+    "C3-5": 0.9291
+  },
+  "disagreement_pairs_count": 12,
+  "boundary_case_grading": {
+    "B2_C1-1": {
+      "T1": "NO",
+      "T2": "NO",
+      "T3": "YES",
+      "T4": "YES"
+    },
+    "B2_C2-1": {
+      "T1": "YES",
+      "T2": "YES",
+      "T3": "YES",
+      "T4": "YES"
+    },
+    "B2_C2-3": {
+      "T1": "YES",
+      "T2": "YES",
+      "T3": "YES",
+      "T4": "YES"
+    },
+    "B2_C3-3": {
+      "T1": "YES",
+      "T2": "YES",
+      "T3": "YES",
+      "T4": "YES"
+    },
+    "C3_C2-1": {
+      "T1": "YES",
+      "T2": "YES",
+      "T3": "YES",
+      "T4": "YES"
+    },
+    "C3_C2-3": {
+      "T1": "YES",
+      "T2": "YES",
+      "T3": "YES",
+      "T4": "YES"
+    },
+    "C3_C3-1": {
+      "T1": "YES",
+      "T2": "YES",
+      "T3": "YES",
+      "T4": "YES"
+    },
+    "C3_C3-2": {
+      "T1": "YES",
+      "T2": "YES",
+      "T3": "YES",
+      "T4": "YES"
+    },
+    "C3_C3-3": {
+      "T1": "YES",
+      "T2": "YES",
+      "T3": "YES",
+      "T4": "YES"
+    },
+    "C3_C3-4": {
+      "T1": "YES",
+      "T2": "YES",
+      "T3": "YES",
+      "T4": "YES"
+    },
+    "C3_C3-5": {
+      "T1": "YES",
+      "T2": "YES",
+      "T3": "YES",
+      "T4": "YES"
+    }
+  },
+  "auditor_decision": "APPROVED",
+  "criteria_changed": [
+    "C1-1",
+    "C3-3",
+    "C3-4"
+  ],
+  "criteria_unchanged": [
+    "C1-2",
+    "C2-1",
+    "C2-2",
+    "C2-3",
+    "C3-1",
+    "C3-2",
+    "C3-5"
+  ],
+  "gold_standard_accuracy": {
+    "overall_accuracy": 0.956,
+    "overall_correct": 153,
+    "overall_total": 160,
+    "split_count": 1,
+    "boundary_accuracy": 0.909,
+    "boundary_correct": 10,
+    "boundary_total": 11,
+    "tag_accuracy": {
+      "절차": {
+        "accuracy": 0.969,
+        "correct": 62,
+        "total": 64
+      },
+      "개념": {
+        "accuracy": 0.948,
+        "correct": 91,
+        "total": 96
+      }
+    },
+    "per_teacher_accuracy": {
+      "T1": 0.956,
+      "T2": 0.894,
+      "T3": 0.956,
+      "T4": 0.963
+    },
+    "key_students": {
+      "B2": {
+        "correct_criteria": [
+          "C1-2",
+          "C2-1",
+          "C2-2",
+          "C2-3",
+          "C3-1",
+          "C3-2",
+          "C3-3",
+          "C3-4",
+          "C3-5"
+        ],
+        "wrong_criteria": [],
+        "accuracy": 1.0
+      },
+      "C3": {
+        "correct_criteria": [
+          "C1-1",
+          "C1-2",
+          "C2-1",
+          "C2-2",
+          "C2-3",
+          "C3-1",
+          "C3-2",
+          "C3-3",
+          "C3-4",
+          "C3-5"
+        ],
+        "wrong_criteria": [],
+        "accuracy": 1.0
+      }
+    }
+  }
+}

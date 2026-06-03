@@ -1,0 +1,87 @@
+{
+  "cycle": 2,
+  "timestamp": "2026-05-25T18:05:05.871149",
+  "fleiss_kappa_overall": 0.8999,
+  "fleiss_kappa_by_criterion": {
+    "C1-1": 0.9076,
+    "C1-2": 0.7964,
+    "C2-1": 0.8704,
+    "C2-2": 0.8615,
+    "C2-3": 0.9136,
+    "C3-1": 0.8123,
+    "C3-2": 1.0,
+    "C3-3": 0.9344,
+    "C3-4": 1.0,
+    "C3-5": 0.8346
+  },
+  "disagreement_pairs_count": 15,
+  "boundary_case_grading": {},
+  "auditor_decision": "APPROVED",
+  "criteria_changed": [],
+  "criteria_unchanged": [
+    "C1-1",
+    "C1-2",
+    "C2-1",
+    "C2-2",
+    "C2-3",
+    "C3-1",
+    "C3-2",
+    "C3-3",
+    "C3-4",
+    "C3-5"
+  ],
+  "gold_standard_accuracy": {
+    "overall_accuracy": 0.838,
+    "overall_correct": 134,
+    "overall_total": 160,
+    "split_count": 3,
+    "boundary_accuracy": 0,
+    "boundary_correct": 0,
+    "boundary_total": 0,
+    "tag_accuracy": {
+      "미분류": {
+        "accuracy": 0.838,
+        "correct": 134,
+        "total": 160
+      }
+    },
+    "per_teacher_accuracy": {
+      "T1": 0.838,
+      "T2": 0.831,
+      "T3": 0.838,
+      "T4": 0.881
+    },
+    "key_students": {
+      "B2": {
+        "correct_criteria": [
+          "C1-2",
+          "C2-1",
+          "C2-2",
+          "C3-1",
+          "C3-2",
+          "C3-3",
+          "C3-4",
+          "C3-5"
+        ],
+        "wrong_criteria": [],
+        "accuracy": 1.0
+      },
+      "C3": {
+        "correct_criteria": [
+          "C1-1",
+          "C1-2",
+          "C2-1",
+          "C2-2",
+          "C2-3",
+          "C3-1",
+          "C3-2",
+          "C3-3",
+          "C3-4",
+          "C3-5"
+        ],
+        "wrong_criteria": [],
+        "accuracy": 1.0
+      }
+    }
+  }
+}

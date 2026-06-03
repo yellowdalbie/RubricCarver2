@@ -1,0 +1,47 @@
+{
+  "cycle": 1,
+  "timestamp": "2026-05-25T17:42:32.038191",
+  "fleiss_kappa_overall": 0.7774,
+  "fleiss_kappa_by_criterion": {
+    "C1": 0.7072,
+    "C2": 0.7688,
+    "C3": 0.8416
+  },
+  "disagreement_pairs_count": 9,
+  "boundary_case_grading": {},
+  "auditor_decision": "APPROVED",
+  "criteria_changed": [
+    "C1",
+    "C2",
+    "C3"
+  ],
+  "criteria_unchanged": [],
+  "gold_standard_accuracy": {
+    "overall_accuracy": 0,
+    "overall_correct": 0,
+    "overall_total": 0,
+    "split_count": 0,
+    "boundary_accuracy": 0,
+    "boundary_correct": 0,
+    "boundary_total": 0,
+    "tag_accuracy": {},
+    "per_teacher_accuracy": {
+      "T1": 0,
+      "T2": 0,
+      "T3": 0,
+      "T4": 0
+    },
+    "key_students": {
+      "B2": {
+        "correct_criteria": [],
+        "wrong_criteria": [],
+        "accuracy": 0
+      },
+      "C3": {
+        "correct_criteria": [],
+        "wrong_criteria": [],
+        "accuracy": 0
+      }
+    }
+  }
+}

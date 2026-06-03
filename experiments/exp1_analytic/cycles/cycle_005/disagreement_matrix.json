@@ -1,0 +1,1160 @@
+{
+  "students_with_disagreement": [
+    "C1",
+    "F2"
+  ],
+  "matrix": {
+    "A1": {
+      "C1-1": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C1-2": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C2-1": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C2-2": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C2-3": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C3-1": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C3-2": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C3-3": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C3-4": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C3-5": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      }
+    },
+    "A2": {
+      "C1-1": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C1-2": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C2-1": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C2-2": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C2-3": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C3-1": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C3-2": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C3-3": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C3-4": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C3-5": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      }
+    },
+    "B1": {
+      "C1-1": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C1-2": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C2-1": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C2-2": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C2-3": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C3-1": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C3-2": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C3-3": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C3-4": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C3-5": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      }
+    },
+    "B2": {
+      "C1-1": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C1-2": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C2-1": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C2-2": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C2-3": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C3-1": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C3-2": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C3-3": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C3-4": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C3-5": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      }
+    },
+    "C1": {
+      "C1-1": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C1-2": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C2-1": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C2-2": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C2-3": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C3-1": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C3-2": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C3-3": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "YES",
+        "T4": "NO",
+        "agreed": false
+      },
+      "C3-4": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "YES",
+        "T4": "NO",
+        "agreed": false
+      },
+      "C3-5": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "YES",
+        "T4": "NO",
+        "agreed": false
+      }
+    },
+    "C2": {
+      "C1-1": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C1-2": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C2-1": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C2-2": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C2-3": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C3-1": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C3-2": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C3-3": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C3-4": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C3-5": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      }
+    },
+    "C3": {
+      "C1-1": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C1-2": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C2-1": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C2-2": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C2-3": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C3-1": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C3-2": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C3-3": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C3-4": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C3-5": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      }
+    },
+    "D1": {
+      "C1-1": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C1-2": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C2-1": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C2-2": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C2-3": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C3-1": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C3-2": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C3-3": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C3-4": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C3-5": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      }
+    },
+    "D2": {
+      "C1-1": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C1-2": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C2-1": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C2-2": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C2-3": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C3-1": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C3-2": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C3-3": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C3-4": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C3-5": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      }
+    },
+    "D3": {
+      "C1-1": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C1-2": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C2-1": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C2-2": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C2-3": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C3-1": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C3-2": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C3-3": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C3-4": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C3-5": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      }
+    },
+    "E1": {
+      "C1-1": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C1-2": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C2-1": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C2-2": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C2-3": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C3-1": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C3-2": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C3-3": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C3-4": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C3-5": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      }
+    },
+    "E2": {
+      "C1-1": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C1-2": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C2-1": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C2-2": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C2-3": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C3-1": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C3-2": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C3-3": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C3-4": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C3-5": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      }
+    },
+    "F1": {
+      "C1-1": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C1-2": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C2-1": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C2-2": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C2-3": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C3-1": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C3-2": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C3-3": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C3-4": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C3-5": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      }
+    },
+    "F2": {
+      "C1-1": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "YES",
+        "agreed": false
+      },
+      "C1-2": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "YES",
+        "agreed": false
+      },
+      "C2-1": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "YES",
+        "agreed": false
+      },
+      "C2-2": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "YES",
+        "agreed": false
+      },
+      "C2-3": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "YES",
+        "agreed": false
+      },
+      "C3-1": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "YES",
+        "agreed": false
+      },
+      "C3-2": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "YES",
+        "agreed": false
+      },
+      "C3-3": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "YES",
+        "agreed": false
+      },
+      "C3-4": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "YES",
+        "agreed": false
+      },
+      "C3-5": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "YES",
+        "agreed": false
+      }
+    },
+    "I1": {
+      "C1-1": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C1-2": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C2-1": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C2-2": {
+        "T1": "YES",
+        "T2": "YES",
+        "T3": "YES",
+        "T4": "YES",
+        "agreed": true
+      },
+      "C2-3": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C3-1": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C3-2": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C3-3": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C3-4": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C3-5": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      }
+    },
+    "I2": {
+      "C1-1": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C1-2": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C2-1": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C2-2": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C2-3": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C3-1": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C3-2": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C3-3": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C3-4": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      },
+      "C3-5": {
+        "T1": "NO",
+        "T2": "NO",
+        "T3": "NO",
+        "T4": "NO",
+        "agreed": true
+      }
+    }
+  }
+}
