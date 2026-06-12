@@ -8,4 +8,4 @@
 
 결과적으로 본 연구는 AI 채점 시스템이 단순한 문장 분석기를 넘어 수학교육학적 규범을 내면화한 '평가 전문 디지털 트윈(Evaluation Digital Twin)'으로 기능할 수 있는 이론적 가능성을 확인하였다. 본 연구는 통제된 합성 데이터 환경에서의 파일럿 테스트로서, 향후 실제 학생 데이터를 활용한 교차 검증 및 로컬 모델(Local LLM) 인프라 연구와 결합하여 더욱 신뢰성 있는 AI 평가 보조 시스템을 설계하기 위한 기초 자료로 활용될 수 있다.
 
-* 키워드: 자동 채점(Automated Grading), 다중 에이전트 시스템(Multi-Agent System), 루브릭 최적화(Rubric Optimization), 대형 언어 모델(LLM), 절차적 유창성 편향(Procedural Fluency Bias), 채점 강건성(Grading Robustness)
+* 키워드: 자동 채점(Automated Grading), 다중 에이전트 시스템(Multi-Agent System), 루브릭 최적화(Rubric Optimization), 대형 언어 모델(LLM), 절차적 유창성 편향(Procedural Fluency Bias), 채점 강건성(Grading Robustness), 설계과학 연구(Design Science Research)

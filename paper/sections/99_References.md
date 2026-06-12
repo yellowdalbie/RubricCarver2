@@ -16,6 +16,7 @@
 * Chen, L., et al. (2026). Confusion-Aware Rubric Optimization for LLM-based Automated Grading (CARO). *arXiv preprint arXiv:2603.00451*.
 * Frieder, S., Pinchetti, L., Chevalier, A., Griffiths, R.-R., Salvatori, T., Lukasiewicz, T., Petersen, P. C., & Berner, J. (2023). Mathematical capabilities of ChatGPT. In *Advances in Neural Information Processing Systems, 36*. https://arxiv.org/abs/2301.13867
 * Huang, R., Tlili, A., Xu, L., Chen, Y., Zheng, L., Metwally, A. H. S., Da, T., Chang, T., Wang, H., Mason, J., Stracke, C. M., Sampson, D., & Bonk, C. J. (2023). Educational futures of intelligent synergies between humans, digital twins, avatars, and robots: The iSTAR framework. *Journal of Applied Learning & Teaching, 6*(2), 28–43. https://doi.org/10.37074/jalt.2023.6.2.33
+* Jadhav, R., Danve, J., & Shaw, S. (2026). Implicit grading bias in large language models: How writing style affects automated assessment across math, programming, and essay tasks. *arXiv preprint arXiv:2603.18765*. https://arxiv.org/abs/2603.18765
 * Kane, M. T. (2013). Validating the interpretations and uses of test scores. *Journal of Educational Measurement*, 50(1), 1–73. https://doi.org/10.1111/jedm.12000
 * Kilpatrick, J., Swafford, J., & Findell, B. (Eds.). (2001). *Adding it up: Helping children learn mathematics*. National Research Council. Washington, DC: National Academy Press.
 * Landis, J. R., & Koch, G. G. (1977). The measurement of observer agreement for categorical data. *Biometrics*, 33(1), 159–174.
