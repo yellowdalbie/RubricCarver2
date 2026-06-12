@@ -29,56 +29,110 @@ CHAR_SMALL  = 16   # 11pt (표 셀용)
 BF_TABLE    = 4    # 표 외곽: SOLID 전체
 BF_CELL     = 9    # 셀: SOLID 전체
 
-# ─── 수식 유니코드 변환 ───────────────────────────────────────
-_LATEX = [
-    (r'\\kappa',   'κ'), (r'\\alpha',   'α'), (r'\\beta',    'β'),
-    (r'\\gamma',   'γ'), (r'\\delta',   'δ'), (r'\\mu',      'μ'),
-    (r'\\sigma',   'σ'), (r'\\pi',      'π'), (r'\\infty',   '∞'),
-    (r'\\leq',     '≤'), (r'\\geq',     '≥'), (r'\\neq',     '≠'),
-    (r'\\approx',  '≈'), (r'\\times',   '×'), (r'\\cdot',    '·'),
-    (r'\\sqrt',    '√'), (r'\\sum',     '∑'), (r'\\prod',    '∏'),
-    (r'\\int',     '∫'), (r'\\partial', '∂'), (r'\\nabla',   '∇'),
-    (r'\\pm',      '±'), (r'\\mp',      '∓'), (r'\\to',      '→'),
-    (r'\\rightarrow','→'),(r'\\Rightarrow','⇒'),
-    (r'\\text\{([^}]*)\}', r'\1'),
-    (r'\\frac\{([^}]*)\}\{([^}]*)\}', r'(\1)/(\2)'),
-    (r'\\,', ' '), (r'\\!', ''), (r'\\;', ' '), (r'\\:', ' '),
-    (r'\\quad', '  '), (r'\\qquad', '   '),
-    (r'\\_', '_'), (r'\\\\', ' '),
-    (r'\^(\{[^}]*\}|\S)', lambda m: _superscript(m.group(1).strip('{}'))),
-    (r'_(\{[^}]*\}|\S)',  lambda m: _subscript(m.group(1).strip('{}'))),
-    (r'[{}]', ''),
-]
-_SUP = str.maketrans('0123456789', '⁰¹²³⁴⁵⁶⁷⁸⁹')
-_SUB = str.maketrans('0123456789', '₀₁₂₃₄₅₆₇₈₉')
+# ─── 한글 수식 편집기 문법 변환 ──────────────────────────────
+# 한글 수식 편집기 규칙:
+#   - 분수:   {분자} over {분모}
+#   - 거듭제곱: base ^{exp}
+#   - 아래첨자: base _{sub}
+#   - 그리스 문자: backslash 없이 이름만  (kappa, alpha, ...)
+#   - 적분: int _{하한}^{상한}
+#   - 합: sum _{하한}^{상한}
+#   - 기타 연산자: leq, geq, neq, approx, times, cdot, pm, ...
+# 수식은 본문에 〔수식: ...〕 형태로 표시 → 한글에서 복사 후 수식 편집기에 붙여넣기
 
-def _superscript(s):
-    return s.translate(_SUP)
-
-def _subscript(s):
-    return s.translate(_SUB)
-
-def math2text(expr):
-    """LaTeX 수식 → 유니코드 근사 텍스트"""
+def latex_to_heq(expr: str) -> str:
+    """LaTeX 표현 → 한글 수식 편집기 입력 문법"""
     s = expr.strip()
-    for pat, rep in _LATEX:
-        if callable(rep):
-            s = re.sub(pat, rep, s)
-        else:
-            s = re.sub(pat, rep, s)
+
+    # \text{...} → 괄호 없이 텍스트
+    s = re.sub(r'\\text\s*\{([^}]*)\}', r'"\1"', s)
+
+    # \frac{a}{b} → {a} over {b}
+    def frac_repl(m):
+        return f'{{{m.group(1)}}} over {{{m.group(2)}}}'
+    s = re.sub(r'\\frac\s*\{([^{}]*)\}\s*\{([^{}]*)\}', frac_repl, s)
+
+    # \sqrt{x} → sqrt {x}
+    s = re.sub(r'\\sqrt\s*\{([^}]*)\}', r'sqrt {\1}', s)
+    s = re.sub(r'\\sqrt\s*(\S)',        r'sqrt \1', s)
+
+    # 그리스 문자 (backslash 제거)
+    for g in ['alpha','beta','gamma','delta','epsilon','zeta','eta','theta',
+              'iota','kappa','lambda','mu','nu','xi','pi','rho','sigma',
+              'tau','upsilon','phi','chi','psi','omega',
+              'Alpha','Beta','Gamma','Delta','Epsilon','Zeta','Eta','Theta',
+              'Iota','Kappa','Lambda','Mu','Nu','Xi','Pi','Rho','Sigma',
+              'Tau','Upsilon','Phi','Chi','Psi','Omega']:
+        s = s.replace(f'\\{g}', g)
+
+    # 연산자·기호
+    replacements = [
+        (r'\\int',      'int'),
+        (r'\\sum',      'sum'),
+        (r'\\prod',     'prod'),
+        (r'\\infty',    'inf'),
+        (r'\\partial',  'partial'),
+        (r'\\nabla',    'nabla'),
+        (r'\\leq',      'leq'),
+        (r'\\geq',      'geq'),
+        (r'\\neq',      'neq'),
+        (r'\\approx',   'approx'),
+        (r'\\sim',      'sim'),
+        (r'\\times',    'times'),
+        (r'\\cdot',     'cdot'),
+        (r'\\pm',       'pm'),
+        (r'\\mp',       'mp'),
+        (r'\\to',       'to'),
+        (r'\\rightarrow', 'to'),
+        (r'\\leftarrow',  'leftarrow'),
+        (r'\\Rightarrow', 'Rightarrow'),
+        (r'\\in',       'in'),
+        (r'\\notin',    'notin'),
+        (r'\\subset',   'subset'),
+        (r'\\cup',      'cup'),
+        (r'\\cap',      'cap'),
+        (r'\\ldots',    '...'),
+        (r'\\cdots',    '...'),
+        (r'\\prime',    "'"),
+        (r"\'",         "'"),
+        # 공백/포맷 제거
+        (r'\\,',  ' '),
+        (r'\\!',  ''),
+        (r'\\;',  ' '),
+        (r'\\:',  ' '),
+        (r'\\quad',  ' '),
+        (r'\\qquad', ' '),
+        (r'\\\\',    ' '),
+        (r'\\left',  ''),
+        (r'\\right', ''),
+        (r'\\ ',     ' '),
+    ]
+    for pat, rep in replacements:
+        s = re.sub(pat, rep, s)
+
+    # 남은 백슬래시 명령 제거
+    s = re.sub(r'\\[a-zA-Z]+', '', s)
+
     return s.strip()
 
 def inline_math(text):
-    """텍스트 내 $...$ 변환"""
-    def repl(m):
-        return math2text(m.group(1))
-    return re.sub(r'\$\$(.+?)\$\$', lambda m: math2text(m.group(1)), text, flags=re.DOTALL)
+    """$$...$$ 블록 수식 → 〔수식: 편집기문법〕"""
+    return re.sub(
+        r'\$\$(.+?)\$\$',
+        lambda m: f'〔수식: {latex_to_heq(m.group(1))}〕',
+        text, flags=re.DOTALL
+    )
 
 def inline_math_simple(text):
-    return re.sub(r'\$([^$\n]+?)\$', lambda m: math2text(m.group(1)), text)
+    """$...$ 인라인 수식 → 〔수식: 편집기문법〕"""
+    return re.sub(
+        r'\$([^$\n]+?)\$',
+        lambda m: f'〔수식: {latex_to_heq(m.group(1))}〕',
+        text
+    )
 
 def clean_text(text):
-    """마크다운 마커 제거 + 수식 변환 + XML 이스케이프"""
+    """마크다운 마커 제거 + 수식 편집기 문법으로 변환 + XML 이스케이프"""
     text = inline_math(text)
     text = inline_math_simple(text)
     # 링크 [text](url) → text
