@@ -113,21 +113,32 @@ def latex_to_heq(expr: str) -> str:
     # 남은 백슬래시 명령 제거
     s = re.sub(r'\\[a-zA-Z]+', '', s)
 
+    # ── 이항 연산자 앞 공백 추가 ──────────────────────────────
+    # 지수·첨자·숫자·닫는 괄호 뒤의 + - 앞에 공백을 넣어
+    # 수식 편집기가 지수 범위를 잘못 인식하지 않도록 함
+    # 예: t^2-5t+4  →  t^2 -5t +4
+    s = re.sub(
+        r'(?<=[a-zA-Z0-9)\]}])([+\-])(?=[a-zA-Z0-9(\\{])',
+        r' \1 ', s
+    )
+    # 연속 공백 정리
+    s = re.sub(r'  +', ' ', s)
+
     return s.strip()
 
 def inline_math(text):
-    """$$...$$ 블록 수식 → 〔수식: 편집기문법〕"""
+    """$$...$$ 블록 수식 → 수식 편집기 문법 텍스트"""
     return re.sub(
         r'\$\$(.+?)\$\$',
-        lambda m: f'〔수식: {latex_to_heq(m.group(1))}〕',
+        lambda m: latex_to_heq(m.group(1)),
         text, flags=re.DOTALL
     )
 
 def inline_math_simple(text):
-    """$...$ 인라인 수식 → 〔수식: 편집기문법〕"""
+    """$...$ 인라인 수식 → 수식 편집기 문법 텍스트"""
     return re.sub(
         r'\$([^$\n]+?)\$',
-        lambda m: f'〔수식: {latex_to_heq(m.group(1))}〕',
+        lambda m: latex_to_heq(m.group(1)),
         text
     )
 
