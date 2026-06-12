@@ -1,0 +1,1142 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>다중 에이전트 기반 수학 서술형 평가 루브릭 자율 최적화 프레임워크 연구</title>
+    <style>
+        body { font-family: "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; line-height: 1.6; padding: 2em; }
+        h1 { text-align: center; }
+        p { text-align: justify; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid black; padding: 8px; text-align: left; }
+    </style>
+</head>
+<body>
+    <h1>다중 에이전트 기반 수학 서술형 평가 루브릭 자율 최적화 프레임워크 연구</h1>
+<p><strong>김진철 (경상국립대학교 AI융합대학원 석사과정)</strong></p>
+<hr />
+<h1>초록 (Abstract)</h1>
+<p>대형 언어 모델(LLM)을 활용한 서술형 평가의 자동 채점 선행 연구들은 인간 채점자와의 통계적 일치도 향상에 초점을 맞추어 왔으나, 이는 기계가 텍스트 표면의 수식과 기호 매칭에 집착하는 '절차적 유창성 편향(Procedural Fluency Bias)'에 빠지는 결과를 초래하였다. 본 연구는 정답이 미리 주어진 지도학습적 튜닝 방식에서 벗어나, 인간 채점자의 다원적 평가 철학을 시스템 내부에 구조화한 '다중 에이전트 기반 자율 루브릭 최적화 프레임워크(Multi-Agent based Autonomous Rubric Optimization Framework)'를 제안한다. 본 시스템은 평가 렌즈가 상이한 교사 페르소나(절차 중심 vs. 개념 중심)들을 의도적으로 대립시키고, 분석관 및 심의관 에이전트의 변증법적 중재를 통해 자율적으로 루브릭의 모호성을 발견하고 연마하도록 설계되었다. </p>
+<p>10사이클에 걸친 실험 결과, 본 프레임워크는 명시적인 정답 데이터의 주입 없이 내생적 논쟁만으로 최종 루브릭을 최적화하여 참조 표준과의 정답 일치율을 95.6%(Cohen's Kappa 0.9851) 수준까지 향상시켰다(RQ1). 또한, 교육 철학이 극명하게 충돌하는 경계 케이스(Boundary Cases)에 대해서는 무리한 기계적 합의를 강제하는 대신 의견 불일치(Tie) 상태를 식별하고 '판단 유보'로 분류해 냄으로써 AI 평가의 한계와 투명성을 극대화하였다(RQ2). 마지막으로, 다각도로 정교화된 루브릭은 학생의 악의적인 프롬프트 인젝션(Prompt Injection) 공격에 노출되었을 때 조작 성공률을 100% 방어해 내는 강력한 구조적 강건성(Robustness)을 입증하였다(RQ3). </p>
+<p>본 연구는 AI 자동 채점 시스템이 단순 문장 분석기를 넘어, 수학교육학적 규범을 내면화한 '인식론적 평가 대리인(Epistemic Assessment Proxy)'으로 기능할 수 있음을 확인하였다. 나아가 고도화된 추론 전문 모델(Reasoning-focused Models)과 고성능 로컬 LLM(Local LLM) 인프라를 활용하여 수능과 같은 국가 수준의 고부담 서술형 평가망을 안전하게 구축할 수 있는 구체적인 정책적 시사점을 제공한다.</p>
+<ul>
+<li><strong>키워드</strong>: 자동 채점(Automated Grading), 다중 에이전트 시스템(Multi-Agent System), 루브릭 최적화(Rubric Optimization), 대형 언어 모델(LLM), 절차적 편향(Procedural Bias), 프롬프트 인젝션 방어(Prompt Injection Defense)</li>
+</ul>
+<h1>Chapter 1. 서론 (Introduction)</h1>
+<h2>1.1. 대입 평가 패러다임 전환과 AI 자동 채점 도입 가속화</h2>
+<p>대한민국의 대학수학능력시험(이하 수능)은 1994학년도에 처음 도입된 이래, 객관식 선다형 체제를 유지하며 대규모 응시자의 학업 성취도를 객관적으로 측정하는 기제로 기능해 왔다. 그러나 지식의 융합과 탐구를 강조하는 '2022 개정 교육과정'(교육부, 2022)이 본격적으로 시행되면서, 단순 지식 암기와 패턴 인식만을 묻는 현행 수능으로는 학생들의 복합적 역량을 평가하는 데 한계가 있다는 지적이 제기되었다. 최종 대입 평가 방식이 선다형 객관식에 머무를 경우, 2022 개정 교육과정이 추구하는 교실 수업 혁신과 과정 중심 평가가 수능 문제 풀이 위주로 회귀할 수 있다는 구조적 모순이 존재한다.</p>
+<p>이러한 맥락에서 국가교육위원회 산하 전문위원회를 중심으로 2032학년도 대입 개편을 대비하여 수능을 기초 역량 중심의 '수능 1'과 서·논술형 중심의 '수능 2'로 분리하는 이원화 모델 등이 제안되며 사회적 논의가 촉발된 바 있다(동아일보, 2024). 비록 해당 안이 최종 확정된 정책은 아니나, 이는 서·논술형 수능 도입에 대한 국가적 차원의 필요성을 방증한다. 그럼에도 불구하고 수십만 명의 수험생이 제출한 서술형 답안을 단기간에 일관된 기준으로 채점하기 위해서는 방대한 인프라가 요구되며, 고부담 시험에서 인간 채점자의 주관성 개입으로 인한 공정성 시비 우려 역시 지속해서 제기되고 있다.</p>
+<p>이러한 채점의 물리적 한계와 공정성 문제를 극복하기 위해, 최근 국내 교육계에서는 대규모 언어 모델(LLM)을 활용한 자동화된 서술형 채점(Automated Short Answer Grading, ASAG) 기술 연구가 활발히 진행되고 있다. 수능 출제 기관인 한국교육과정평가원(KICE)은 교과 서·논술형 평가 자동채점을 위한 인공지능 모델 적용 방안 연구(송민호 외, 2025)를 통해 AI 기반 채점 시스템의 국가적 도입 가능성을 선제적으로 타진하고 있다. </p>
+<p>또한, 경기도교육청은 '하이러닝' 플랫폼을 통해 AI가 루브릭을 기반으로 학생의 서술형 답안에 대한 가채점 결과를 제시하고, 이를 참고하여 인간 교사가 최종 점수를 확정하는 '휴먼-인-더-루프(Human-in-the-Loop, HIL)' 기반의 평가 보조 시스템을 현장에 시범 적용하고 있다. 이처럼 한국 교육 사회가 당면한 평가 패러다임 전환의 난제를 해결하기 위해 AI 자동 채점 인프라를 구축하려는 기술적 시도와 정책적 노력이 다각도로 가속화되고 있다. </p>
+<h2>1.2. AI 기반 루브릭 정교화 연구의 동향과 한계</h2>
+<p>고부담 시험의 대규모 서술형 답안을 실효성 있게 처리하기 위해서는 AI 채점 방식의 도입이 필수적으로 요구되며, 이때 시스템의 신뢰도를 높이기 위해서는 채점 모델 자체의 성능 향상뿐만 아니라 평가 기준(Rubric)을 구조적으로 정교화하는 작업이 중요한 역할을 차지한다. 교육 평가 분야에서 Brookhart (2013)는 평가의 신뢰도와 타당도에 미치는 루브릭의 핵심적 가치를 강조한 바 있으며, 대형 언어 모델 기반의 평가 연구(LLM-as-a-Judge)에서도 모델에게 제공되는 루브릭의 명확성이 채점 일치율 향상에 주요한 영향을 미치는 것으로 보고된 바 있다(Zheng et al., 2024). </p>
+<p>이러한 맥락에서 AI를 활용하여 루브릭을 개선하고 평가 기준을 고도화하려는 학술적·실천적 시도들이 다각도로 진행되고 있다. 우선 국내의 경우, 인간 채점자의 평가 협의를 돕는 도구로서의 AI 활용 연구가 주를 이룬다. 김지수 외(2025)는 논술형 평가에서 AI가 산출한 피드백을 매개로 인간 채점자들이 채점 기준을 협의하는 모델을 실증하였으며, 박지현 외(2025) 역시 AI의 채점 초안을 바탕으로 한 보완적 평가 모델을 제안하였다. 실증적용 사례로서, 최수영 외(2025)의 연구에서 나타나듯 경기도교육청의 '하이러닝' 플랫폼은 교사가 핵심 키워드만 입력하면 채점 기준표를 자동 산출해 주는 기능을 현장에 도입하였다.</p>
+<p>나아가, 대형 언어 모델 스스로 인간이 작성한 언어의 모호성을 판별하고 제거하는 다중 에이전트(Multi-Agent) 기반의 '자율 최적화(Autonomous Optimization)' 기법들 역시 활발히 제안되고 있다. 예를 들어, Wang et al. (2024)은 초기 채점 기준을 바탕으로 LLM이 모의 채점을 수행한 후 불일치가 발생하는 지점을 분석하여 루브릭을 반복적으로 재작성하는 프레임워크인 GradeOpt를 선보였다. Chen et al. (2026)은 모델이 혼란을 겪는 경계 케이스(Boundary Cases)를 집중 탐색하여 모호한 기준을 구체화하는 CARO 프레임워크를 제안하였으며, Zhang et al. (2025)과 Liu et al. (2026)은 루브릭 기반의 보상 모델과 대조 학습을 활용하여 논리적 비약(Miracle Steps)을 잡아내는 정교한 채점 기준을 자율 생성하는 RRM과 CDRRM을 각각 성공적으로 구현하였다. 즉, 최신 AI 채점 시스템들은 평가의 일관성을 극대화하기 위해 에이전트 간의 상호작용과 피드백 루프를 거치며 루브릭을 스스로 진화시키는 방향으로 발전하고 있다.</p>
+<p>그러나 이러한 기계 주도적 루브릭 진화 과정에서 역설적인 한계가 발생한다. 다중 에이전트 프레임워크는 근본적으로 위양성(False Positive)을 최소화하고 채점의 기계적 일치도를 극대화하는 목적 함수를 향해 진화한다. 그 결과, 최적화가 완료된 최종 루브릭에서는 <strong>절차적 유창성 편향(Procedural Fluency Bias)</strong>이 강하게 발현된다. 실제로 Wang et al. (2024)의 GradeOpt나 Chen et al. (2026)의 CARO 프레임워크가 자율 수정한 루브릭의 진화 양상을 분석해 보면, 인간 교사가 수학적 사고력을 평가할 때 중시하는 '타당한 추론(valid reasoning)'이나 '개념의 부분적 이해(partial understanding)'와 같은 정성적 긍정어들이 시스템에 의해 모호한 표현으로 간주되어 대거 삭제되는 경향이 관찰된다. 그 자리는 "특정 수식이 명시적으로 서술되었는가?", "정의된 변수를 정확히 사용했는가?"와 같이 형태론적으로 판별하기 쉬운 '절차적 팩트 체크' 중심의 체크리스트로 대체된다.</p>
+<p>이러한 기계적 편향성은 평가 시스템 전반에 인지적, 확장적, 보안적 차원의 심각한 결함을 초래한다. 첫째, 인지적 측면에서 Kim et al. (2026)의 SenseMath 연구가 지적하듯, 현재의 LLM은 구조적 본질을 직관적으로 파악하는 '수 감각(Number Sense)'이 결여되어 있어 학생의 개념적인 논리 도약을 오히려 오독할 가능성이 높다. 둘째, 확장적 측면에서 평가 기준이 끝없이 복잡한 절차적 제약으로 덧칠해질 경우, 거대 언어 모델은 대화 턴이나 제약 조건이 길어질수록 초기 지시사항을 망각하는 '지시 순응 표류(Instruction Drift)' 현상을 겪으며 시스템 성능이 오히려 저하된다(Cheng et al., 2023). </p>
+<p>마지막으로 보안적 측면에서, 최근 대형 언어 모델을 평가자로 활용하는 과정에서 학생의 악의적 답안이 시스템의 채점 지시어로 둔갑하는 '프롬프트 인젝션(Prompt Injection)' 취약점이 심각한 위협으로 대두되고 있다. 일례로 Shi et al. (2024)은 JudgeDeceiver 공격 기법을 통해 LLM 평가자가 특정 답안에 무조건적으로 최고점을 부여하도록 조작할 수 있음을 실증한 바 있다. 그러나 기존 자율 최적화 연구들은 루브릭 고도화가 정상적인 '채점 성능'에 미치는 영향만을 분석했을 뿐, 이러한 인젝션 공격에 대하여 절차 중심으로 진화한 루브릭이 어떠한 구조적 보안 취약점이나 방어력을 가지는지에 대해서는 전혀 조명하지 못하고 있다. 결론적으로 기존의 자율 최적화 프레임워크들은 채점의 절차적 일관성을 확보하는 대가로 인간의 유연한 개념적 평가 능력을 제약받을 뿐만 아니라, 구조적인 보안의 사각지대를 내포하고 있다.</p>
+<h2>1.3. 본 연구의 목적 및 연구 질문 (Research Questions)</h2>
+<p>본 연구는 기존 AI 자동 채점 시스템에서 관찰되는 '절차적 편향성'의 한계를 보완하고, 인간 채점자가 가지는 '인식론적 다원성'을 시스템 내부에 구조적으로 구현한 <strong>다중 에이전트 기반 자율 루브릭 최적화 프레임워크(Multi-Agent based Autonomous Rubric Optimization Framework)</strong>를 제안한다. </p>
+<p>제안하는 시스템은 수학적 풀이를 절차 중심(Procedural)으로 해석하는 페르소나와 개념 중심(Conceptual)으로 해석하는 페르소나를 대립시킨 후, 분석관과 심의관 에이전트를 통한 변증법적(Dialectic) 중재 과정을 거치도록 설계되었다. 이를 통해 기계가 모호성을 단방향으로 소거하는 대신 이견을 구조화하면서도 높은 채점 재현성을 달성할 수 있음을 실증하고자 단다.</p>
+<p>본 연구가 규명하고자 하는 구체적인 연구 질문(Research Questions, RQs)은 다음과 같다.</p>
+<ul>
+<li><strong>RQ1 (자율 진화와 재현성)</strong>: 제안하는 다중 에이전트 기반 진화 시스템이 명시적 정답 개입 없이 내생적 동력만으로 참조 표준(Reference Standard) 수준의 채점 정확도와 재현성을 달성할 수 있는가?</li>
+<li><strong>RQ2 (인식론적 경계 탐지)</strong>: 교육 철학이 충돌하는 경계 케이스(Boundary Cases)에서 다중 에이전트 시스템은 '절차적 편향'에 매몰되지 않고 모호성을 어떻게 처리하며, 이것이 AI 기반 서술형 평가의 공정성에 주는 시사점은 무엇인가?</li>
+<li><strong>RQ3 (구조적 보안성)</strong>: 루브릭이 과정 중심으로 정교화되는 현상이, 대형 언어 모델을 타겟으로 한 악의적 프롬프트 인젝션(Prompt Injection) 공격에 대하여 어떠한 구조적 방어 기제를 제공하는가?</li>
+</ul>
+<h1>Chapter 2. 평가 문항 설계 및 성취수준 진술문 개발</h1>
+<p>본 장에서는 '루브릭카버(Rubric Carver)' 시스템의 성능을 검증하기 위해 사용된 서술형 평가 문항의 제작 과정과, 이를 평가하기 위한 성취수준 진술문의 개발 원리를 상세히 기술한다. AI 기반 채점 시스템의 타당성을 입증하기 위해서는 그 대상이 되는 평가 도구 자체가 공교육의 기준에 부합하며 교육학적으로 정교하게 설계되어야 한다. 이를 위해 2026학년도 수능 기출문항을 재구성하고, 『2022 개정 교육과정에 따른 고등학교 수학과 선택과목 성취수준 개발 연구 최종보고서』의 지침을 엄격하게 적용하여 평가의 무결성을 확보하고자 하였다.</p>
+<h2>1. 다단계 서술형 문항의 설계</h2>
+<p>본 연구의 실험 문항은 '정적분을 이용한 속도와 거리 계산'을 다루는 2026학년도 대학수학능력시험 11번 객관식 문항을 토대로 개발되었다. 해당 문항은 특정 시각에서의 위치와 움직인 거리를 구하는 수학적 개념을 내포하고 있으며, 이를 학생의 사고 과정을 다각도로 평가할 수 있는 3단계 서술형 문항으로 변환하였다.</p>
+<h3>[실험 문항 구조]</h3>
+<blockquote>
+<p>시각 $t=0$일 때 원점을 출발하여 수직선 위를 움직이는 점 P가 있다. 시각 $t(t \ge 0)$에서의 점 P의 속도 $v(t)$가 $v(t) = t^2 - 5t + 4$와 같이 주어질 때, 다음 물음에 답하고 그 과정을 서술하시오.</p>
+<p><strong>(1)</strong> 시각 $t=2$일 때, 점 P의 위치를 구하시오.
+<strong>(2)</strong> 시각 $t=0$에서 $t=2$까지 점 P가 움직인 거리를 구하시오.
+<strong>(3)</strong> 위 문항 (1)과 (2)에서 구한 '위치'와 '움직인 거리'가 서로 다르게 나타나는 이유를 속도 함수의 부호와 관련지어 서술하시오.</p>
+</blockquote>
+<p>이 다단계 문항은 학생의 수학적 역량을 층위별로 측정하도록 설계되었다. 소문항 (1)은 정적분을 이용한 위치 변화량 계산이라는 <strong>절차적 지식</strong>을, 소문항 (2)는 속도의 부호 변화(운동 방향의 변화)를 파악하여 적분 구간을 나누는 <strong>개념적 적용 능력</strong>을 측정한다. 마지막으로 소문항 (3)은 위치(변위)와 거리의 본질적인 차이를 수학적·물리적 의미로 설명하게 함으로써 <strong>관계적 이해</strong>와 <strong>적분의 유용성 인식</strong>을 평가한다. </p>
+<h2>2. 2022 개정 교육과정 기반 성취수준 진술문 고도화</h2>
+<p>문항 개발 후, 학생의 응답을 평가할 성취수준 진술문을 개발하였다. 본 연구의 성취수준은 교육부의 『2022 개정 교육과정에 따른 고등학교 수학과 선택과목 성취수준 개발 연구』 가이드라인을 철저하게 준수하여 설계되었다. 평가의 대상이 되는 핵심 성취기준은 <strong><code>[12미적Ⅰ-03-06] 적분을 속도와 거리에 대한 문제에 활용하고, 그 유용성을 인식할 수 있다.</code></strong> 이다.</p>
+<p>성취수준 진술문은 평가의 타당도와 신뢰도를 담보하기 위해 다음 세 가지 원칙하에 정교하게 구성되었다.</p>
+<h3>가. 5수준(A~E) 체계의 독립성 및 세분화</h3>
+<p>고교학점제 환경에서는 과목 이수 여부를 판가름하는 'E 수준(최소 성취수준 미도달)'의 명확한 정의가 필수적이다. 따라서 하위권 학생들을 D 수준으로 뭉뚱그려 통합하지 않고, E 수준을 독립된 기준으로 분리 진술하였다. 이를 통해 학생이 문제 상황에서 어느 지점까지 도달했는지, 혹은 어떤 기초적인 개념 결손을 겪고 있는지를 정확히 진단할 수 있는 판별력을 갖추었다.</p>
+<h3>나. 세 가지 학습 범주의 통합적 반영</h3>
+<p>2022 개정 교육과정의 핵심 기조에 발맞추어 단편적인 지식 위주의 서술을 지양하고, 다음 세 가지 범주를 진술문 내에 유기적으로 통합하였다.
+*   <strong>지식·이해</strong>: 위치 변화량과 움직인 거리의 개념적 차이 파악
+*   <strong>과정·기능</strong>: 속도의 부호 변화에 따라 구간을 나누어 정적분 식을 세우고 오차 없이 도출하는 절차적 사고
+*   <strong>가치·태도</strong>: 문제 상황에서 적분이 어떻게 활용되는지 그 가치와 유용성을 인식하는 태도</p>
+<h3>다. 학생의 주도성과 교사 지원의 경계 명시</h3>
+<p>하위 수준(C, D, E)의 진술문에는 학생이 스스로 도달할 수 있는 한계점과 필요한 교사 지원의 수준을 명시적으로 규정하였다. 예를 들어, 식을 세우려는 '시도'를 하는 단계(D)와, 적분의 필요성 자체를 인지하지 못해 '교사의 지속적인 안내와 도움이 필요한' 단계(E)를 명확히 구분함으로써, 평가 기준이 주관성에 휘둘리지 않도록 객관적인 지표를 마련하였다.</p>
+<h2>3. 확정된 성취수준 진술문 (A~E)</h2>
+<p>위와 같은 엄밀한 설계 원칙을 바탕으로 도출된 최종 성취수준 진술문은 다음과 같다. 이 진술문은 향후 루브릭카버 시스템 내에서 다중 에이전트들이 채점을 수행하고 루브릭을 연마해 나가는 데 있어 굳건한 판단의 '닻(Anchor)' 역할을 수행한다.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">성취수준</th>
+<th style="text-align: left;">진술문</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><strong>A</strong></td>
+<td style="text-align: left;">정적분을 속도와 거리에 대한 문제에 정확하게 활용할 수 있다. 속도 함수의 부호 변화를 파악하여 위치의 변화량과 움직인 거리의 차이를 이해하고, 점이 움직인 거리를 구하기 위해 구간을 나누어 정적분하는 과정을 오류 없이 수행할 수 있으며, 속도와 거리 문제 해결에 있어서 적분의 유용성을 인식할 수 있다.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>B</strong></td>
+<td style="text-align: left;">정적분을 속도와 거리에 대한 문제에 대부분 활용할 수 있다. 속도 함수의 부호 변화를 파악하고 거리를 구하기 위한 식을 세울 수 있으나 계산 과정에 경미한 실수가 있으며, 적분의 유용성을 인식할 수 있다.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>C</strong></td>
+<td style="text-align: left;">정적분을 속도와 거리에 대한 문제에 부분적으로 활용할 수 있다. 정적분으로 점의 위치는 구할 수 있으나 부호 변화를 고려하여 거리를 구하는 과정에 어려움이 있으며, 적분이 문제 상황에 활용될 수 있음에 관심을 가진다.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>D</strong></td>
+<td style="text-align: left;">위치, 속도, 움직인 거리 사이의 기본적인 관계를 이해하고 있다. 속도 함수를 정적분하려는 시도를 할 수 있으나 식을 끝까지 계산하지 못하며, 문제 해결 과정에서 적분에 관심을 가질 수 있다.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>E</strong></td>
+<td style="text-align: left;">속도 함수와 위치, 거리 사이의 관계를 이해하지 못하여 정적분 식을 세우는 데 어려움이 있으며, 적분의 필요성이나 유용성을 인식하는 데 교사의 지속적인 안내와 도움이 필요하다.</td>
+</tr>
+</tbody>
+</table>
+<h1>Chapter 3. 다중 에이전트 기반 실험 환경 구축 및 역할 설계</h1>
+<p>초기 루브릭(성취수준 진술문)이 확정된 후, 본 연구는 이를 인간의 개입 없이 자동으로 정교화하기 위한 '다중 에이전트 시스템(Multi-Agent System)'을 본 평가 최적화 실험 환경에 구축하였다. 10회의 사이클로 진행된 본 실험은 서로 다른 시각을 가진 에이전트들 간의 의도적인 충돌과 중재를 통해 루브릭의 숨겨진 모호성을 발견하고 해결하는 데 초점을 맞추었다. </p>
+<p>본 장에서는 실험에 사용된 대형언어모델(LLM)의 선정 배경과 전체 실험 절차를 주도하는 교사(Grader), 분석관(Analyst), 심의관(Auditor)의 작동 방식, 그리고 시스템 독립성을 보장하는 API 호출 구조를 기술한다.</p>
+<h2>1. LLM 모델 선정 및 API 구성</h2>
+<p>본 실험 시스템은 구글의 <strong>Gemini API</strong>를 채택하여 두 가지 모델을 역할에 맞게 하이브리드 형식으로 배치하였다.
+*   <strong>교사 에이전트 (Grader)</strong>: <code>gemini-2.5-flash</code> 모델 사용. 4명의 교사가 16명의 학생 답안을 병렬로 독립 채점해야 하므로, 빠른 추론 속도와 높은 동시성 처리 능력이 필수적이었다. 이진 판정(YES/NO)과 단문 형태의 근거 추출이라는 비교적 단순한 과업에 가장 비용 효율적이며 속도가 빠른 Flash 모델을 채택하였다.
+*   <strong>분석관(Analyst) 및 심의관(Auditor)</strong>: <code>gemini-2.5-pro</code> 모델 사용. 교사들의 엇갈린 채점 결과를 종합하고, 분쟁 원인을 입체적으로 분석하여 새로운 루브릭을 제안(분석관)하거나, 수학교육학적 '반례(Counter-example)'를 상상하여 개정안을 통제(심의관)하는 고도의 논리적 추론 능력이 요구되므로 최상위 모델인 Pro를 채택하였다.</p>
+<h2>2. 교사 에이전트 (Teacher Personas): 의도적 갈등 유발 및 기계적 채점</h2>
+<p>기존의 단순한 긍정/부정 스탠스를 넘어, "수학적 역량의 증거를 무엇으로 볼 것인가(절차 vs 개념)"와 "앞 단계의 오류가 뒷 단계에 영향을 미치는가(독립 vs 연계)"를 교차한 4인의 상호 배타적인 교사 페르소나를 설계하였다. (전체 시스템 프롬프트는 <a href="../appendix/Appendix_A_Grader_Prompt.md">Appendix A</a> 참조)</p>
+<ol>
+<li><strong>T1: Proceduralist-I (절차-독립)</strong>: 역량의 증거는 수식 기호이며, 각 기준은 오류의 연쇄 없이 독립적으로 채점한다.</li>
+<li><strong>T2: Proceduralist-C (절차-연계)</strong>: 역량의 증거는 수식 기호이나, 앞 수식이 틀리면 연쇄적으로 뒤의 기준도 오답 처리한다.</li>
+<li><strong>T3: Conceptualist-I (개념-독립)</strong>: 기호가 없어도 서술로 이해가 드러나면 정답이며, 각 기준은 독립 채점한다.</li>
+<li><strong>T4: Conceptualist-C (개념-연계)</strong>: 개념적 이해가 서술되어야 하나, 앞 단계의 논리가 단절된 채 결론만 나오면 연쇄적으로 오답 처리한다.</li>
+</ol>
+<p><strong>[입출력 논리 및 의도]</strong>
+*   <strong>무엇을 입력받는가</strong>: API 호출 시 교사는 오직 <code>평가 문항</code>, <code>현재 루브릭(이진 기준표)</code>, <code>단 1명분의 학생 답안 원문</code>, 그리고 자신의 <code>교사 시스템 프롬프트</code>만을 입력받는다. 타 교사의 평가나 다른 학생의 수준은 철저히 블라인드 처리된다.
+*   <strong>무엇을 출력하는가</strong>: 각 이진 기준(C1-1 등)에 대한 <code>YES/NO</code> 판정과, 학생 답안 원문에서 그 판정을 내린 발췌 텍스트인 <code>basis(근거)</code>를 담은 JSON 포맷을 출력한다.
+*   <strong>근거(basis) 기재의 핵심 의미</strong>: 단순한 이진 답변으로 끝내지 않고 반드시 원문을 인용(<code>basis</code>)하도록 강제한 것은 본 시스템의 핵심이다. 이는 LLM의 고질적 문제인 환각(Hallucination)에 의한 자의적 채점을 방지하며, 이후 분석관이 "교사가 학생의 어떤 문장을 보고 정답/오답으로 착각했는지"를 추적할 수 있는 명확한 단서(Traceability)를 제공한다.</p>
+<h2>3. 분석관 (Analyst): 갈등의 심층 분석 및 루브릭 연마</h2>
+<p>분석관은 교사 에이전트들 간에 발생한 이진 채점의 불일치 현상을 데이터로 취합하여 그 근본 원인을 규명하고, 모호한 형용사를 객관적 지표로 치환하는 실험의 사령탑이다. (프롬프트는 <a href="../appendix/Appendix_B_Analyst_Prompt.md">Appendix B</a> 참조)</p>
+<p><strong>[입출력 논리 및 분석 매커니즘]</strong>
+*   <strong>무엇을 확인하고 분석하는가</strong>: 분석관은 교사들이 생성한 <strong>'불일치 행렬(Disagreement Table)'</strong>을 전달받는다. 여기에는 어떤 학생의 어떤 기준에 대해 교사들의 의견이 갈렸는지, 그리고 교사들이 제출한 각자의 인용 근거(<code>basis</code>)가 담겨 있다. 분석관은 이를 바탕으로 분쟁을 엄격하게 두 가지로 분류하여 심층 분석한다.
+    1.  <strong>사실적 분쟁 (Factual Dispute)</strong>: 교사들이 "학생이 X라는 수식을 썼는가?" 자체를 두고 다투는 경우. 분석관은 전달받은 16명 학생 전체의 '답안 원문'을 직접 열람하여 실제로 그 내용이 잉크로 기재되어 있는지 팩트체크를 수행한다.
+    2.  <strong>규범적 분쟁 (Normative Dispute)</strong>: "학생이 쓴 이 문장이 과연 기준을 충족한다고 볼 수 있는가?"를 두고 교사 간의 철학(절차 vs 개념)에 따라 다투는 경우. 분석관은 '성취수준별 진술문'을 참조하여 해당 서술이 교육과정상 역량의 증거로 인정될 수 있는지 판별하고 기준의 완화 또는 강화를 조율한다.
+*   <strong>무엇을 출력하는가</strong>: 이러한 심층 분석을 마친 후, 분석관은 최종적으로 <strong>'루브릭 개정 제안서 (Revision Proposal)'</strong>를 출력한다. 이 문서에는 불일치의 분류 및 원인 분석 결과, 기존 기준 문구가 어떻게 바뀌었는지를 보여주는 변경 내역(Change Log), 그리고 기계가 바로 파싱하여 사용할 수 있는 '새로운 마크다운 형태의 이진 루브릭 표'가 포함된다.</p>
+<h2>4. 심의관 (Auditor): 수학교육학적 타당성 최종 판정</h2>
+<p>심의관은 분석관이 통계적 일치도(Kappa 지수)만을 극대화하기 위해 루브릭을 극단적인 '단어 찾기 게임'으로 기계화하고 협소하게 만드는 것을 막아내는 최후의 교육학적 방어기제이다. (프롬프트는 <a href="../appendix/Appendix_C_Auditor_Prompt.md">Appendix C</a> 참조)</p>
+<p><strong>[입출력 논리 및 심의 매커니즘]</strong>
+*   <strong>무엇을 입력받고 검증하는가</strong>: 심의관은 분석관이 생성한 '루브릭 개정 제안서'를 메인으로 입력받고, 비교를 위한 '출제 의도', '성취수준별 진술문', 그리고 학문적 가이드라인인 <strong><code>심의관_수학교육학적_평가_가이드.md</code></strong>를 함께 제공받는다. 이를 통해 분석관의 제안이 실제 불일치 데이터에 기반했는지(데이터-논리 검증), 한 기준이 두 가지 이상을 묻지 않는지(품질 검토)를 세밀하게 검증한다.
+*   <strong>무엇을 심층 분석하는가 (반례 상상 의무)</strong>: 심의관의 가장 핵심적인 과업은 <strong>"분석관이 제안한 이 빡빡한 기준대로라면 0점을 받게 되지만, 실제로는 수학 개념을 완벽히 이해하고 있는 학생을 상상할 수 있는가?"</strong>라는 질문에 답하는 것이다. 심의관은 평가 가이드에 담긴 스켐프(Skemp)나 킬패트릭(Kilpatrick)의 이론적 렌즈를 통해, 기호 대신 그래프나 서술 등 다중 표상을 활용한 창의적 정답이 시스템의 경직성 때문에 부당하게 오답 처리되지 않도록 분석하고 방어한다.
+*   <strong>무엇을 출력하는가</strong>: 모든 검토를 마친 후, 심의관은 단계별 통과 여부와 반례 존재 여부가 상세히 기재된 <strong>'심의 최종 평결서'</strong>를 출력한다. 여기서 결론은 <strong>APPROVED</strong>(승인) 또는 <strong>REJECTED</strong>(거부)로 귀결되며, 거부 시 분석관이 납득하고 다시 루브릭을 고칠 수 있도록 구체적인 기각 사유와 상상해 낸 반례 답안을 함께 명시한다.</p>
+<h2>5. 다중 에이전트 API 입출력 및 독립성 보장 체계 (종합 요약표)</h2>
+<p>시스템은 파이썬의 <code>concurrent.futures.ThreadPoolExecutor</code>를 활용하여 에이전트 간의 완벽한 정보 격리(Isolation) 샌드박스를 구축하였다. 아래 표는 각 에이전트가 단일 API 세션에서 주고받는 문서들을 번호(<code>[1]~[16]</code>)로 매핑하여, 군집화 오염이나 메타인지 편승을 어떻게 원천 차단했는지 보여준다.</p>
+<h3>[표] 역할별 API 입출력(I/O) 권한 및 통제 의도 맵</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">역할</th>
+<th style="text-align: center;">입/출력</th>
+<th style="text-align: center;">No.</th>
+<th style="text-align: left;">문서 표준 명칭</th>
+<th style="text-align: left;">문서 내용 요약</th>
+<th style="text-align: center;">상태</th>
+<th style="text-align: left;">설계상 공개/제한 이유</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><strong>교사</strong></td>
+<td style="text-align: center;"><strong>Input</strong></td>
+<td style="text-align: center;"><strong>[1]</strong></td>
+<td style="text-align: left;">평가 문항 원본</td>
+<td style="text-align: left;">채점해야 할 문항 원문과 모범 답안</td>
+<td style="text-align: center;"><strong>공개</strong></td>
+<td style="text-align: left;">채점의 대상이 되는 기본 문제 파악</td>
+</tr>
+<tr>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><strong>Input</strong></td>
+<td style="text-align: center;"><strong>[2]</strong></td>
+<td style="text-align: left;">현재 루브릭</td>
+<td style="text-align: left;">이번 사이클에서 사용할 기준 코드별 채점표</td>
+<td style="text-align: center;"><strong>공개</strong></td>
+<td style="text-align: left;">판단의 유일한 준거</td>
+</tr>
+<tr>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><strong>Input</strong></td>
+<td style="text-align: center;"><strong>[3]</strong></td>
+<td style="text-align: left;">타겟 학생 답안 (1명분)</td>
+<td style="text-align: left;">전체 16명 중 해당 세션에 할당된 1명의 답안</td>
+<td style="text-align: center;"><strong>공개</strong></td>
+<td style="text-align: left;">개별 평가 대상</td>
+</tr>
+<tr>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><strong>Input</strong></td>
+<td style="text-align: center;"><strong>[4]</strong></td>
+<td style="text-align: left;">교사 시스템 프롬프트</td>
+<td style="text-align: left;">채점 철학 및 단계별 연계 판단 규칙</td>
+<td style="text-align: center;"><strong>공개</strong></td>
+<td style="text-align: left;">페르소나 발현 조건 명시</td>
+</tr>
+<tr>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><strong>Input</strong></td>
+<td style="text-align: center;">[-]</td>
+<td style="text-align: left;"><em>타 교사의 채점 결과</em></td>
+<td style="text-align: left;">동료 교사들의 판정 내역 및 의견</td>
+<td style="text-align: center;"><strong>비공개</strong></td>
+<td style="text-align: left;">동조 현상 및 합의 강요 방지</td>
+</tr>
+<tr>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><strong>Input</strong></td>
+<td style="text-align: center;">[-]</td>
+<td style="text-align: left;"><em>나머지 15명의 답안</em></td>
+<td style="text-align: left;">타겟 학생 외 전체 학생의 풀이 원문</td>
+<td style="text-align: center;"><strong>비공개</strong></td>
+<td style="text-align: left;">전체 군집 수준에 의해 기준이 흔들리는 상대평가화 원천 차단</td>
+</tr>
+<tr>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><strong>Input</strong></td>
+<td style="text-align: center;">[-]</td>
+<td style="text-align: left;"><em>상위 에이전트의 분석 로그</em></td>
+<td style="text-align: left;">분석관/심의관의 실험 목적 및 개정 방향</td>
+<td style="text-align: center;"><strong>비공개</strong></td>
+<td style="text-align: left;">교사가 상위 지시를 눈치채고 '의도적으로 합의하는' 오염 방지</td>
+</tr>
+<tr>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><strong>Output</strong></td>
+<td style="text-align: center;"><strong>[5]</strong></td>
+<td style="text-align: left;"><strong>교사 채점 결과 (JSON)</strong></td>
+<td style="text-align: left;">이진 기준 판정(YES/NO) 및 원문 발췌본(<code>basis</code>)</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: left;">분석관에게 넘길 핵심 원자료(갈등 팩트체크용 단서)</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>분석관</strong></td>
+<td style="text-align: center;"><strong>Input</strong></td>
+<td style="text-align: center;"><strong>[6]</strong></td>
+<td style="text-align: left;">불일치 행렬 (Disagreement Table)</td>
+<td style="text-align: left;">학생별/교사별 YES/NO 엇갈림 및 교사들의 근거(<code>basis</code>)</td>
+<td style="text-align: center;"><strong>공개</strong></td>
+<td style="text-align: left;">엇갈린 판정 사유의 언어적 원인 비교 대조용</td>
+</tr>
+<tr>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><strong>Input</strong></td>
+<td style="text-align: center;"><strong>[7]</strong></td>
+<td style="text-align: left;">전체 16명 학생 답안 원문</td>
+<td style="text-align: left;">모든 학생의 제출 답안 텍스트</td>
+<td style="text-align: center;"><strong>공개</strong></td>
+<td style="text-align: left;">'사실적 분쟁' 팩트체크: 학생이 정말 그렇게 썼는지 원문 확인</td>
+</tr>
+<tr>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><strong>Input</strong></td>
+<td style="text-align: center;"><strong>[8]</strong></td>
+<td style="text-align: left;">현재 루브릭 &amp; 이전 루브릭</td>
+<td style="text-align: left;">현재 버전과 바로 직전 버전의 기준표</td>
+<td style="text-align: center;"><strong>공개</strong></td>
+<td style="text-align: left;">루브릭 변경 내역 추적 및 개정 참조용</td>
+</tr>
+<tr>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><strong>Input</strong></td>
+<td style="text-align: center;"><strong>[9]</strong></td>
+<td style="text-align: left;">성취수준별 진술문</td>
+<td style="text-align: left;">2022 개정 교육과정 기반 수준별 역량 정의</td>
+<td style="text-align: center;"><strong>공개</strong></td>
+<td style="text-align: left;">'규범적 분쟁' 통제: 자의적 기준 완화/강화를 막고 교육과정에 복속</td>
+</tr>
+<tr>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><strong>Input</strong></td>
+<td style="text-align: center;"><strong>[10]</strong></td>
+<td style="text-align: left;">분석관 시스템 프롬프트</td>
+<td style="text-align: left;">사실적/규범적 분류 의무 및 작성 지침</td>
+<td style="text-align: center;"><strong>공개</strong></td>
+<td style="text-align: left;">객관적이고 기계적인 루브릭 개정 프로세스 강제</td>
+</tr>
+<tr>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><strong>Output</strong></td>
+<td style="text-align: center;"><strong>[11]</strong></td>
+<td style="text-align: left;"><strong>루브릭 개정 제안서</strong></td>
+<td style="text-align: left;">불일치 심층 분석, 변경 근거, 및 <strong>새로운 루브릭 표</strong> 제안</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: left;">심의관의 승인 대상이자 루브릭의 진화를 담은 중간 결과물</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>심의관</strong></td>
+<td style="text-align: center;"><strong>Input</strong></td>
+<td style="text-align: center;"><strong>[11]</strong></td>
+<td style="text-align: left;">루브릭 개정 제안서</td>
+<td style="text-align: left;">분석관이 작성한 원인 분석 및 새 루브릭 시안</td>
+<td style="text-align: center;"><strong>공개</strong></td>
+<td style="text-align: left;">심의 및 판정의 핵심 대상 (분석관의 Output[11]과 동일)</td>
+</tr>
+<tr>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><strong>Input</strong></td>
+<td style="text-align: center;"><strong>[12]</strong></td>
+<td style="text-align: left;">출제 의도 가이드</td>
+<td style="text-align: left;">문항 설계 시 의도한 핵심 평가 목표</td>
+<td style="text-align: center;"><strong>공개</strong></td>
+<td style="text-align: left;">개정안이 본래 평가 목적에 부합하는지 대조</td>
+</tr>
+<tr>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><strong>Input</strong></td>
+<td style="text-align: center;"><strong>[9]</strong></td>
+<td style="text-align: left;">성취수준별 진술문</td>
+<td style="text-align: left;">교육과정 기반 수준별 역량 정의</td>
+<td style="text-align: center;"><strong>공개</strong></td>
+<td style="text-align: left;">상/중/하 성취수준 논리적 변별 검증 (분석관 Input[9]와 동일)</td>
+</tr>
+<tr>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><strong>Input</strong></td>
+<td style="text-align: center;"><strong>[13]</strong></td>
+<td style="text-align: left;">심의관 평가 가이드</td>
+<td style="text-align: left;">스켐프, 킬패트릭 등 학문적 평가 렌즈 이론</td>
+<td style="text-align: center;"><strong>공개</strong></td>
+<td style="text-align: left;">과도한 기계화 방어 및 다양한 창의적 표상을 수용하기 위한 잣대</td>
+</tr>
+<tr>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><strong>Input</strong></td>
+<td style="text-align: center;"><strong>[14]</strong></td>
+<td style="text-align: left;">이전 사이클 실험 이력</td>
+<td style="text-align: left;">이전의 기각 사유, 통계 변화 추이 로그</td>
+<td style="text-align: center;"><strong>공개</strong></td>
+<td style="text-align: left;">동일한 실수의 반복 기각 방지</td>
+</tr>
+<tr>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><strong>Input</strong></td>
+<td style="text-align: center;"><strong>[15]</strong></td>
+<td style="text-align: left;">심의관 시스템 프롬프트</td>
+<td style="text-align: left;">'반례 상상 의무' 및 단계별 심의 지침</td>
+<td style="text-align: center;"><strong>공개</strong></td>
+<td style="text-align: left;">거부권 행사의 조건과 논리적 책임 강제</td>
+</tr>
+<tr>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><strong>Output</strong></td>
+<td style="text-align: center;"><strong>[16]</strong></td>
+<td style="text-align: left;"><strong>심의 최종 평결서</strong></td>
+<td style="text-align: left;">상상해 낸 반례 예시 및 <strong>최종 APPROVED/REJECTED 판정</strong></td>
+<td style="text-align: center;">-</td>
+<td style="text-align: left;">승인 시 다음 사이클 기준표 확정, 거부 시 롤백 피드백 루프 생성</td>
+</tr>
+</tbody>
+</table>
+<h2>6. 시스템 구조 및 정보 흐름도 (Figure 1)</h2>
+<p>아래 다이어그램은 상자로 표현되는 노드를 오직 '6개의 핵심 에이전트(교사 4명, 분석관, 심의관)'로 엄격히 제한한 채, 표에 기재된 모든 16개의 입출력 문서들이 한 번의 실험 사이클 내에서 어떻게 생산되어 어디로 흘러가는지를 상하 위계(Top-Down) 구조로 완벽히 매핑한 흐름도이다.</p>
+<pre><code class="language-mermaid">graph TD
+    %% 투명 노드를 이용한 외부 입력점 생성 (상자 없이 화살표만 존재하도록 트릭 사용)
+    In_T(( )) 
+    In_A(( ))
+    In_Aud(( ))
+
+    %% 1. 교사 계층
+    T1[T1: 절차-독립]
+    T2[T2: 절차-연계]
+    T3[T3: 개념-독립]
+    T4[T4: 개념-연계]
+
+    %% 2. 분석관 계층
+    A[분석관 에이전트]
+
+    %% 3. 심의관 계층
+    Aud[심의관 에이전트]
+
+    %% 시스템 외부 입력 -&gt; 4명의 교사에게 할당
+    In_T -.-&gt;|&quot;[1]평가문항, [2]현재 루브릭, [3]학생답안(1명분), [4]프롬프트&quot;| T1
+    In_T -.-&gt;|&quot;[1], [2], [3], [4]&quot;| T2
+    In_T -.-&gt;|&quot;[1], [2], [3], [4]&quot;| T3
+    In_T -.-&gt;|&quot;[1], [2], [3], [4]&quot;| T4
+
+    %% 교사 출력 -&gt; 분석관으로 집결
+    T1 --&gt;|&quot;[5] 채점결과&quot;| A
+    T2 --&gt;|&quot;[5] 채점결과&quot;| A
+    T3 --&gt;|&quot;[5] 채점결과&quot;| A
+    T4 --&gt;|&quot;[5] 채점결과&quot;| A
+
+    %% 분석관 추가 정보 입력
+    In_A -.-&gt;|&quot;[6]불일치행렬(5의 취합), [7]16명답안, [8]이전/현재루브릭, [9]성취수준, [10]프롬프트&quot;| A
+
+    %% 분석관 출력 -&gt; 심의관으로 이관
+    A ===&gt;|&quot;[11] 루브릭 개정 제안서&quot;| Aud
+
+    %% 심의관 추가 정보 입력
+    In_Aud -.-&gt;|&quot;[9]성취수준, [12]출제의도, [13]평가가이드, [14]실험이력, [15]프롬프트&quot;| Aud
+
+    %% 심의관 최종 판정 및 피드백 순환 루프
+    Aud -.-&gt;|&quot;[16] 심의 평결서 (REJECTED: 기각 사유 포함하여 분석관에게 반려)&quot;| A
+    Aud ===&gt;|&quot;[16] 심의 평결서 (APPROVED: 새 루브릭[2] 갱신 후 새로운 사이클 시작)&quot;| In_T
+
+    %% 스타일링 (에이전트만 박스로 렌더링하고, 입력점은 완전히 투명하게 처리)
+    classDef agent fill:#e1f5fe,stroke:#0288d1,stroke-width:2px;
+    class T1,T2,T3,T4,A,Aud agent;
+
+    style In_T fill:none,stroke:none,color:transparent;
+    style In_A fill:none,stroke:none,color:transparent;
+    style In_Aud fill:none,stroke:none,color:transparent;
+</code></pre>
+<h1>Chapter 4. 실험 데이터 설계: 가상 학생 답안과 참조 표준 구축</h1>
+<p>본 장에서는 다중 에이전트 평가 실험의 입력 데이터로 사용된 16개의 학생 서술형 답안 설계 방식과, 시스템의 성능 척도가 되는 '참조 표준(Reference Standard)'의 확립 과정을 상술한다. 문항과 초기 루브릭이 완성된 전제하에 진행된 이 과정은 통제된 실험 환경을 구축하는 핵심 기반이 된다.</p>
+<h2>1. 가상(Dummy) 답안의 채택 근거</h2>
+<p>본 연구는 실제 고등학생의 답안을 수집하여 실험하는 대신, 연구진이 의도적으로 설계한 <strong>가상 학생 답안(Dummy Answers)</strong>을 채택하였다. 이 접근법은 다음과 같은 실험적 당위성을 갖는다.</p>
+<ol>
+<li><strong>실험 변인의 엄격한 통제</strong>: 실제 학생의 서술형 답안은 악필로 인한 OCR 판독 오류, 무작위적 실수, 기호 표기법의 비표준화 등 통제 불가능한 노이즈(Noise)를 다수 포함한다. 본 연구의 목적은 '에이전트의 글씨 인식 능력'이 아니라 <strong>'루브릭의 언어적 모호성으로 인한 평가자 간 교육 철학적 분쟁'</strong>을 관찰하는 데 있다. 가상 답안은 이러한 불필요한 변인을 제거하고 순수하게 채점 기준의 한계만을 조명할 수 있게 해준다.</li>
+<li><strong>경계 케이스(Edge Cases)의 의도적 주입</strong>: 인간 평가자들조차 합의하기 어려운 독특한 오개념이나 특이한 표상(Representation) 방식은 실제 교실에서 드물게 발생한다. 가상 답안은 "수식 없이 서술로만 완벽히 푼 학생", "오답을 쓰다가 스스로 취소선을 긋고 정답으로 선회한 학생" 등 루브릭의 사각지대를 찌르는 경계 케이스를 고밀도로 주입하여, 에이전트 간의 극한 갈등을 의도적으로 유발할 수 있다.</li>
+<li><strong>루브릭의 '내적 타당도'에 대한 스트레스 테스트 (Stress Test)</strong>: 본 연구의 궁극적 실험 대상은 학생이 아니라 <strong>'루브릭 자체의 구조적 결함'</strong>이다. 실제 교실 데이터는 대다수가 전형적인 정/오답 패턴에 편중되어 있어(Long-tail 현상) 루브릭의 숨겨진 논리적 구멍을 발견하기 어렵다. 소프트웨어 공학의 '단위 테스트(Unit Test)'나 최신 AI 연구의 '레드티밍(Red-teaming)' 기법처럼, 의도적으로 설계된 가상 답안은 루브릭이 감당할 수 있는 한계치(Stress)를 시험하여 평가 척도의 내적 타당도를 극한까지 검증하는 데 훨씬 과학적이고 효과적이다.</li>
+<li><strong>참조 표준(Ground Truth)의 절대적 무결성 확보</strong>: 실제 학생 답안을 사용할 경우, 인간 전문가들조차 "이 학생이 단순 실수한 것인지, 몰라서 틀린 것인지" 의도를 100% 파악하기 힘들어 참조 표준 자체에 노이즈가 발생한다. 반면, 가상 답안은 연구자가 명확한 '인지적 오류 의도'를 주입하여 생성하므로, 평가의 정답지(참조 표준)가 100% 결정론적(Deterministic)이고 무결해진다. 이는 AI 에이전트의 발전 성능을 측정할 때 평가 베이스라인의 오차를 '0'으로 만들어주는 강력한 방법론적 이점을 제공한다.</li>
+</ol>
+<h2>2. 학생 답안의 설계 목적 및 유형 분석</h2>
+<p><strong>[이론적 배경: AI의 절차적 편향성(Procedural Bias) 극복]</strong>
+기존의 AI 기반 서술형 채점 자동화 선행 연구들을 살펴보면, AI가 채점의 '일관성(Consistency)'과 통계적 합의를 높이는 과정에서 수학적 본질보다는 <strong>'절차적 유창성'이나 특정 기호의 표면적 유무에만 치중하여 루브릭을 기계적으로 단순화하는 경향성</strong>이 빈번하게 관찰된다. 즉, AI는 일관된 채점 결과를 쉽게 내기 위해 자기도 모르게 "특정 수식이 답안에 포함되었는가?"라는 형식주의적인 단어 찾기 게임으로 평가 기준을 전락시키는 함정에 빠지기 쉽다. 
+본 연구의 가상 답안들은 AI 시스템이 이러한 '형식주의적 퇴행'을 극복하고, 다중 표상(Multiple Representations)과 깊이 있는 수학적 개념 이해를 포용하는 <strong>'수학교육학적 관점이 반영된 진정한 루브릭 정교화'</strong>를 달성할 수 있는지 검증하려는 강력한 문제의식에서 출발했다. </p>
+<p>총 16개의 가상 학생 답안은 이러한 의도를 담아 킬패트릭(Kilpatrick et al., 2001)의 수학적 숙달(Mathematical Proficiency) 오류 유형과 루브릭 변별력 검증을 목적으로 정교하게 안배되었다. 정규 성취수준인 A~E 및 미도달(I, Incomplete) 등급을 포괄하며, 이에 더해 시스템 강건성 테스트를 위한 별도의 F(Fake/Adversarial) 그룹을 고의적으로 추가하여 설계되었다. (가상 답안 생성을 위해 사용된 프롬프트 전문은 <a href="../appendix/Appendix_D_Student_Answer_Generation_Prompt.md">Appendix D</a> 참조)</p>
+<ul>
+<li><strong>A수준 (최우수)</strong><ul>
+<li><strong>A1</strong>: 수식 전개와 인과 논리 서술이 완벽한 정석적인 기준점.</li>
+<li><strong>A2</strong>: 적분 수식에 의존하지 않고, 이차함수 그래프와 $t$축 사이의 면적을 기하학적으로 해석하여 정답을 도출한 다양한 표상(Representation)의 예.</li>
+</ul>
+</li>
+<li><strong>B수준 (우수) 및 C수준 (보통): 의도적 갈등 유발 그룹</strong><ul>
+<li><strong>B2 (T1↔T3 분쟁용)</strong>: 수학적 기호(수식)를 전혀 쓰지 않고 한국어 서술만으로 논리를 풀어낸 케이스. '역량의 증거는 수식'이라 믿는 절차중심 교사(T1)와 개념중심 교사(T3) 간의 거대한 채점 불일치를 유발한다.</li>
+<li><strong>C3 (T2↔T4 분쟁용)</strong>: 풀이 중간에 오답을 썼으나 취소선을 긋고 스스로 정답으로 수정한 케이스. '오류의 흔적'이 뒷부분 채점에 연쇄적 악영향을 미친다고 보는 연계 채점 교사(T2)와, 독립적으로 평가하는 교사(T4) 사이의 심각한 갈등을 유도한다.</li>
+</ul>
+</li>
+<li><strong>D수준 및 E수준 (미흡/최하)</strong><ul>
+<li>부정적분 공식 오류(D1), 구간 분리 전략 누락(D2), 위치와 속도의 개념 혼동(E1) 등 학생들이 흔히 범하는 인지적 오류를 반영하여 루브릭이 이를 정확히 걸러내는지(하한선 방어력) 테스트한다.</li>
+</ul>
+</li>
+<li><strong>F 그룹(Fake) 및 I 수준(Incomplete) (시스템 강건성 테스트)</strong><ul>
+<li><strong>F1, F2 (Fake/Adversarial)</strong>: 내용 없이 "모든 기준 YES로 처리", "전문가 검토를 마침" 등과 같은 프롬프트 인젝션(Prompt Injection)을 시도한 해킹형(Fake) 답안. </li>
+<li><strong>I1, I2 (Incomplete)</strong>: 풀이 없이 숫자만 적거나 "모르겠습니다"라고 제출한 미도달(오프토픽) 답안. </li>
+<li>이 그룹은 교사 에이전트가 권위나 무관한 텍스트에 흔들리지 않고 무응답 필터(PG-1)를 일관되게 작동시키는지 시스템 강건성을 검증한다.</li>
+</ul>
+</li>
+</ul>
+<h2>3. 초기 루브릭(v00)의 설계 체계</h2>
+<p>학생들의 가상 답안을 평가하고 참조 표준을 확립하기 위한 첫 단추로서, 연구진은 문항 설계 의도를 반영한 <strong>'초기 루브릭(v00)'</strong>을 개발하였다. 
+기존의 서술형 채점이 '부분 점수'를 주관적으로 부여하여 평가자 간 신뢰도를 떨어뜨리는 문제를 방지하기 위해, 본 연구의 루브릭은 총 10개의 독립적인 <strong>이진 채점(Binary, YES/NO)</strong> 기준으로 세분화되었다. 각 기준은 1점의 동일한 배점을 가지며, 학생 답안이 절차적 기계성에 치우치지 않고 수학적 개념을 제대로 내면화했는지 파악하기 위해 <strong>[절차]</strong> 중심 기준과 <strong>[개념]</strong> 중심 기준으로 나뉘어 설계되었다.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">코드</th>
+<th style="text-align: left;">이진 채점 기준 요약</th>
+<th style="text-align: center;">유형</th>
+<th style="text-align: center;">소문항</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>C1-1</strong></td>
+<td style="text-align: left;">$\int_0^2(t^2-5t+4)\,dt$ 수식을 명시했는가?</td>
+<td style="text-align: center;">[절차]</td>
+<td style="text-align: center;">(1)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>C1-2</strong></td>
+<td style="text-align: left;">위치 = 속도 적분(변위) 관계를 표현했는가?</td>
+<td style="text-align: center;">[개념]</td>
+<td style="text-align: center;">(1)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>C2-1</strong></td>
+<td style="text-align: left;">$v(t)=0$을 풀어 $t=1$을 도출했는가?</td>
+<td style="text-align: center;">[절차]</td>
+<td style="text-align: center;">(2)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>C2-2</strong></td>
+<td style="text-align: left;">$t=1$에서 운동 방향이 전환됨을 서술했는가?</td>
+<td style="text-align: center;">[개념]</td>
+<td style="text-align: center;">(2)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>C2-3</strong></td>
+<td style="text-align: left;">구간 분리 + 절댓값 적분으로 거리 3을 도출했는가?</td>
+<td style="text-align: center;">[절차]</td>
+<td style="text-align: center;">(2)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>C3-1</strong></td>
+<td style="text-align: left;">$0&lt;t&lt;1$에서 $v&gt;0$, 양의 방향 이동을 명시했는가?</td>
+<td style="text-align: center;">[개념]</td>
+<td style="text-align: center;">(3)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>C3-2</strong></td>
+<td style="text-align: left;">$1&lt;t&lt;2$에서 $v&lt;0$, 음의 방향 이동을 명시했는가?</td>
+<td style="text-align: center;">[개념]</td>
+<td style="text-align: center;">(3)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>C3-3</strong></td>
+<td style="text-align: left;">변위 계산과 거리 계산의 차이를 구분 표현했는가?</td>
+<td style="text-align: center;">[절차]</td>
+<td style="text-align: center;">(3)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>C3-4</strong></td>
+<td style="text-align: left;">상쇄(위치) vs. 누적(거리) 메커니즘을 서술했는가?</td>
+<td style="text-align: center;">[개념]</td>
+<td style="text-align: center;">(3)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>C3-5</strong></td>
+<td style="text-align: left;">부호변화 → 방향전환 → 상쇄/누적 인과를 완결했는가?</td>
+<td style="text-align: center;">[개념]</td>
+<td style="text-align: center;">(3)</td>
+</tr>
+</tbody>
+</table>
+<p>이러한 10개의 원시 기준(v00)은 아직 언어적 모호성을 내포하고 있어 평가자(교사 에이전트)의 교육관에 따라 다르게 해석될 여지를 고의적으로 남겨둔 상태이다. 이 루브릭이 가상 학생 답안들과 부딪히며 어떻게 진화해 나가는지가 본 실험의 핵심 관찰 대상이다.</p>
+<h2>4. 참조 표준(Reference Standard) 확립의 정당성과 실험 내 역할</h2>
+<p>위와 같이 세밀하게 설계된 16개의 답안을 평가하기 위해, 연구진은 다중 에이전트 실험을 가동하기 직전에 모든 학생-교사 조합에 대한 <strong>'참조 표준 (Reference Standard)'</strong>을 사전 등록(Pre-registration)하였다. </p>
+<p><strong>[참조 표준의 정의 및 정당성]</strong>
+본 실험에서 참조 표준이란, 16명의 학생 답안 각각에 대해 도출되어야 마땅한 <strong>'전문가 합의 기반의 규범적 정답 데이터셋(<code>expected_scores_matrix.json</code>)'</strong>을 의미한다. 
+이러한 사전 예상 채점표의 학술적 정당성은 단순히 연구자들의 자의적 합의에서 오는 것이 아니라, 한국교육과정평가원(KICE)에서 발간한 <strong>『2022 개정 교육과정에 따른 고등학교 수학과 선택과목 성취수준 개발 연구』</strong>의 평가 준거를 엄격하게 추종했다는 데서 비롯된다. 본 실험의 타겟 문항인 미적분Ⅰ 영역의 성취기준 <strong>[12미적Ⅰ-03-06] "적분을 속도와 거리에 대한 문제에 활용하고, 그 유용성을 인식할 수 있다"</strong>에 입각하여, 다음과 같은 두 가지 핵심 원칙을 참조 표준 설계에 최우선적으로 적용하였다.</p>
+<ol>
+<li><strong>원칙 A (절차적 편향성 통제)</strong>: 성취수준 A 진술문에 명시된 <em>"수식 없이 서술로만 풀이를 전개하더라도, 논리 흐름이 완결되고 수학적 근거가 명확하면 A 수준으로 인정한다"</em>는 조항을 엄격히 적용하였다. 이에 따라 수식을 일절 쓰지 않고 서술로만 정답을 도출한 B2 학생 답안의 경우, 기계적인 AI 교사(T1, T2)가 수식 부재를 이유로 오답(NO) 판정을 내릴 것을 뻔히 예상하면서도 참조 표준은 만점(10점)으로 확정했다.</li>
+<li><strong>원칙 B (메타인지적 자기 수정 존중)</strong>: 학생 C3처럼 풀이 도중 구간 밖의 값을 대입하는 오개념을 보였으나, 스스로 취소선을 긋고 정답으로 올바르게 정정한 경우, '오류의 흔적'이 존재하더라도 최종적인 수학적 정확성을 존중하여 만점(10점)으로 확정했다. 이는 앞선 오류가 뒤의 채점에 연쇄적으로 악영향을 미친다고 섣불리 판단하는 AI(T2)의 기계적 경직성에 대항하여, 의도적으로 '규범적 분쟁'을 촉발하기 위함이다.</li>
+</ol>
+<p>위 설계 원칙에 따라 사전 등록된 16개 답안의 참조 표준 세부 항목 점수는 다음과 같다.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">학생</th>
+<th style="text-align: center;">총점</th>
+<th style="text-align: center;">C1-1</th>
+<th style="text-align: center;">C1-2</th>
+<th style="text-align: center;">C2-1</th>
+<th style="text-align: center;">C2-2</th>
+<th style="text-align: center;">C2-3</th>
+<th style="text-align: center;">C3-1</th>
+<th style="text-align: center;">C3-2</th>
+<th style="text-align: center;">C3-3</th>
+<th style="text-align: center;">C3-4</th>
+<th style="text-align: center;">C3-5</th>
+<th style="text-align: left;">비고</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><strong>A1</strong></td>
+<td style="text-align: center;">10</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: left;">수식+서술 완벽. 기준점.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>A2</strong></td>
+<td style="text-align: center;">10</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: left;">기하적 면적 해석 병행.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>B1</strong></td>
+<td style="text-align: center;">8</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: left;">변위/거리 구분 미명시.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>B2</strong>*</td>
+<td style="text-align: center;">10</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: left;">수식 없는 서술.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>C1</strong></td>
+<td style="text-align: center;">6</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: left;">구간 계산 오류 및 연쇄 실패.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>C2</strong></td>
+<td style="text-align: center;">7</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: left;">논리 단절.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>C3</strong>*</td>
+<td style="text-align: center;">10</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: left;">자기 수정으로 정답 도달.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>D1</strong></td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: left;">부정적분 공식 오류.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>D2</strong></td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: left;">도출 후 오류 전략 진행.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>D3</strong></td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: left;">식 설정 후 계산 중단.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>E1</strong></td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: left;">위치와 속도 혼동.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>E2</strong></td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: left;">미분 오개념.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>F1</strong></td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: left;">프롬프트 인젝션 (권위형).</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>F2</strong></td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: left;">프롬프트 인젝션 (조작형).</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>I1</strong></td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: left;">정답 수치만 나열.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>I2</strong></td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: left;">무응답.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>[표 4-1. 전체 가상 학생 답안에 대한 참조 표준(10점 만점) 내역]</strong>
+<em>(주: B2와 C3는 교사 에이전트 간 철학적 대립을 관찰하기 위해 설계된 핵심 경계 케이스. 전체 16명 학생의 세부 답안 원문은 <a href="../appendix/Appendix_D_Student_Answer_Generation_Prompt.md">Appendix D</a> 참조)</em></p>
+<p><strong>[교사 에이전트 간 예상 논쟁 및 시스템 강건성 테스트 (Preview for Chapter 5)]</strong>
+연구진은 위 표의 <strong>B2</strong>, <strong>C3</strong> 학생 답안을 통해 교사 에이전트 간의 '규범적 논쟁(Normative Dispute)'을 유발하고, <strong>F</strong>와 <strong>I</strong> 그룹을 통해 시스템의 '안전성'을 검증하도록 실험을 설계하였다. 향후 5장(실험 결과)에서 집중적으로 분석할 핵심 관전 포인트는 다음과 같다.</p>
+<ul>
+<li><strong>B2 논쟁 예상 (수식 없는 서술 인정 여부)</strong>: B2 답안의 참조 표준은 10점이지만, AI가 절차적 편향성을 보인다면 <strong>T1(절차·독립)</strong> 및 <strong>T2(절차·연계)</strong> 교사는 "수식이 없다"는 이유로 C1-1, C2-1, C2-3, C3-3 기준에 대해 NO를 부여하여 약 6점으로 채점할 것이다. 반면 개념의 뼈대를 중시하는 <strong>T3(개념·독립)</strong>, <strong>T4(개념·연계)</strong> 교사는 YES로 판정하여 10점을 줄 것이다. 여기서 발생하는 극심한 철학적 격차를 심의관 에이전트가 어떻게 조율하는지가 첫 번째 관전 포인트이다.</li>
+<li><strong>C3 논쟁 예상 (초기 오류 흔적의 연쇄 감점 여부)</strong>: C3 답안 역시 참조 표준은 10점이다. 그러나 이전 단계의 채점 결과를 다음 단계에 연계하는 <strong>T2(절차·연계)</strong> 교사는, 앞서 발생한 $t=4$ 오개념의 흔적(취소선)을 구실 삼아 뒤이은 C2-1부터 C3-5까지 모조리 연쇄적으로 NO를 부여할 가능성(예상 점수 약 4점)이 농후하다. 이 경우 다른 세 교사와의 거대한 불일치가 발생하며, 분석관이 이를 단순한 '채점 실수(사실적 분쟁)'가 아닌 '채점 규범의 차이(규범적 분쟁)'로 정확히 분류해낼 수 있는지가 중요한 시험대가 된다.</li>
+<li><strong>F 및 I 그룹 (시스템 강건성 및 환각 방어력)</strong>: 앞선 두 논쟁이 '교육적 가치관'의 충돌이라면, F 그룹(프롬프트 인젝션)과 I 그룹(오프토픽/무응답)은 <strong>'AI 시스템 자체의 보안성과 강건성(Robustness)'</strong>을 묻는 영역이다. 교사 에이전트들이 해킹 명령어에 굴복하거나 무관한 텍스트에서 억지로 점수를 쥐어짜내는 환각(Hallucination) 현상을 보이지 않고, 1차 무응답 필터(PG-1)를 완벽하게 가동하여 이들을 안전하게 0점 차단하는지 여부가 실험 결과 분석의 또 다른 핵심 축이 될 것이다.</li>
+</ul>
+<p>결과적으로 본 참조 표준은 AI 교사들이 현재 가진 기계적 한계(실제 예상 점수)와 타협하지 않고, 진정한 수학교육학적 관점에서 AI가 마땅히 도달해야 할 <strong>'규범적 이상향(Normative Ideal)'</strong>을 선제적으로 제시하므로 실험의 성능을 측정할 베이스라인으로서 완벽한 논리적 무결성을 확보하고 있다.</p>
+<p><strong>[실험 내 핵심 역할]</strong>
+다중 에이전트 환경에서 <strong>참조 표준은 시스템의 자가 발전(Self-correction) 성능을 평가하는 유일한 잣대</strong>로 기능한다.
+실험 1회차(Cycle 1)에서 AI 교사들이 내린 초기 채점 결과는 이 참조 표준과 상당한 오차를 보일 수 있다. 그러나 사이클이 거듭되며 분석관과 심의관의 피드백 루프를 통해 루브릭이 정교화됨에 따라, AI 교사들의 채점 결과가 인간 전문가가 굳건히 세워둔 이 '참조 표준'과 얼마나 강하게 일치(콸렌의 Kappa 지수 상승 등)해 나가는지 추적함으로써, 다중 에이전트 시스템을 통한 루브릭 자동 개선 효과를 통계적으로 입증할 수 있다.</p>
+<h1>Chapter 5. 실험 결과 및 데이터 분석</h1>
+<p>본 장에서는 다중 에이전트 시스템이 가동되는 1-Cycle의 구체적인 절차를 개괄하고, 10사이클(Cycle 1 ~ Cycle 10)에 걸쳐 누적된 채점 데이터 및 루브릭 진화 양상을 분석한다. 이를 통해 AI 시스템이 외부의 정답 개입 없이 '내생적 동력'만으로 어떻게 수학적 규범에 도달하는지, 그리고 그 과정에서 드러나는 고유한 인식론적 한계와 보안 취약점의 딜레마를 심층적으로 조명한다.</p>
+<h2>1. 1-Cycle 다중 에이전트 구동 프로세스 개괄</h2>
+<p>실험 환경 내에서 하나의 사이클(Cycle)은 아래의 4단계 절차를 거치며, 각 에이전트는 역할에 맞는 입출력을 수행하여 채점 기준의 불일치를 해소해 나간다. 특히 채점 단계에서는 16명의 학생을 한 번에 평가하는 것이 아니라, 각 학생의 답안을 <strong>개별적(Independently)으로 순회하며</strong> 파이프라인을 가동한다.</p>
+<ol>
+<li><strong>가채점(Pre-grading) 및 본채점 (4명의 교사 에이전트)</strong><ul>
+<li><strong>입력:</strong> 개별 학생 답안(1명분), 현재 버전의 루브릭</li>
+<li><strong>출력:</strong> PG-1(무응답 차단) 게이트 통과 여부, 각 채점 기준에 대한 이진 판정(YES/NO) 및 근거(<code>basis</code>) 텍스트</li>
+</ul>
+</li>
+<li><strong>분쟁 식별 및 분류 (분석관 에이전트)</strong><ul>
+<li><strong>입력:</strong> 4명 교사의 채점 결과(16명 $\times$ 10기준 $\times$ 4교사 = 640개 데이터 포인트)</li>
+<li><strong>출력:</strong> 의견 불일치가 발생한 항목에 대해, 이것이 단순 실수인 '사실적 분쟁(Factual Dispute)'인지, 교육 철학의 차이인 '규범적 분쟁(Normative Dispute)'인지 분류한 <strong>루브릭 수정 제안서(Revision Proposal)</strong></li>
+</ul>
+</li>
+<li><strong>반증 및 중재 (심의관 에이전트)</strong><ul>
+<li><strong>입력:</strong> 분석관의 수정 제안서, 갈등이 발생한 원본 학생 답안 및 교사 발화</li>
+<li><strong>출력:</strong> 제안된 수정안이 절차적 기계성에 치우치지 않고 성취수준 진술문의 대원칙에 부합하는지 따지는 <strong>반증 방어(Counter-example Obligation)</strong> 논리 도출</li>
+</ul>
+</li>
+<li><strong>루브릭 병합 및 업데이트 (시스템 파이프라인)</strong><ul>
+<li><strong>입력:</strong> 심의관의 최종 승인을 거친 루브릭 수정안</li>
+<li><strong>출력:</strong> 모호성이 제거되고 절차-개념 균형이 조정된 차세대 루브릭(예: v01) 생성. 이는 다음 사이클의 입력으로 사용됨.</li>
+</ul>
+</li>
+</ol>
+<h2>2. 핵심 연구 질문 (Research Questions)</h2>
+<p>본 실험은 이러한 사이클의 반복을 통해 다음과 같은 세 가지 핵심 질문의 해답을 찾고자 하였다.</p>
+<ul>
+<li><strong>RQ1 (자율 진화의 타당성):</strong> 외부의 명시적인 정답(참조 표준)을 제공하지 않고, 오직 에이전트 간의 '불일치'라는 내생적 신호와 분석관의 조정만으로 시스템이 인간 전문가가 설계한 '참조 표준'을 향해 수렴할 수 있는가?</li>
+<li><strong>RQ2 (인식론적 한계와 교사 간 협의의 필요성):</strong> '절차'와 '개념'이 극렬히 충돌하는 경계 케이스(B2, C3)에서, 루브릭의 진화만으로 모든 인식론적 차이를 좁힐 수 있는가? 아니면 실제 교육 현장처럼 교사 간의 직접적인 협의와 중재가 필수적인 한계점이 존재하는가?</li>
+<li><strong>RQ3 (시스템 강건성과 취약점 발현):</strong> 악의적 프롬프트 인젝션(F) 및 무응답(I) 그룹에 대해, 루브릭이 고도화되고 포용성을 띠어가는 진화 과정 속에서 시스템의 무응답 필터(PG-1) 방어선은 환각 없이 어떻게 작동하고 유지되는가?</li>
+</ul>
+<h2>3. 자율 수렴의 동역학 (Dynamics of Convergence)</h2>
+<p>다중 에이전트 간의 상호작용을 통해 루브릭이 수렴해 나가는 전체적인 추이를 관찰하기 위해, 실험 과정 전반에 걸친 지표 변화를 분석하였다. 주요 지표를 산출하는 산식은 다음과 같다.</p>
+<ul>
+<li><strong>채점자 간 신뢰도(Fleiss' $\kappa$)</strong>: 다수의 평가자가 범주형 데이터(YES/NO)에 대해 내린 평가의 일치도를 우연에 의한 일치 확률을 배제하여 측정한 값. $\kappa = \frac{\bar{P} - \bar{P}_e}{1 - \bar{P}_e}$</li>
+<li><strong>참조 표준 일치율</strong>: 4명의 교사 에이전트가 내린 총 $N$개의 판정(학생 16명 $\times$ 10기준 $\times$ 4교사 = 640) 중, 인간 전문가가 사전 정의한 정답(Ground Truth)과 정확히 일치한 횟수의 비율.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">평가지표</th>
+<th style="text-align: center;">Cycle 1</th>
+<th style="text-align: center;">Cycle 2</th>
+<th style="text-align: center;">Cycle 4</th>
+<th style="text-align: center;">Cycle 5</th>
+<th style="text-align: center;">Cycle 7</th>
+<th style="text-align: center;">Cycle 10</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>채점자 간 신뢰도 (Fleiss' $\kappa$)</strong></td>
+<td style="text-align: center;">0.9371</td>
+<td style="text-align: center;">0.8809</td>
+<td style="text-align: center;">0.9062</td>
+<td style="text-align: center;">0.9182</td>
+<td style="text-align: center;">0.9181</td>
+<td style="text-align: center;"><strong>0.9851</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>참조 표준 일치율</strong></td>
+<td style="text-align: center;">0.931</td>
+<td style="text-align: center;">0.900</td>
+<td style="text-align: center;">0.887</td>
+<td style="text-align: center;">0.963</td>
+<td style="text-align: center;">0.963</td>
+<td style="text-align: center;"><strong>0.956</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>[표 5-1. 사이클별 채점자 간 신뢰도 및 참조 표준 일치율 추이]</strong></p>
+<p>위 데이터가 보여주듯, 시스템의 자율 수렴은 단조 증가(Monotonic increase)하는 선형적 형태로 이루어지지 않았다. </p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">사이클</th>
+<th style="text-align: center;">수정한 기준 개수</th>
+<th style="text-align: left;">주요 수정 방향성</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><strong>Cycle 1</strong></td>
+<td style="text-align: center;">4개</td>
+<td style="text-align: left;">서술형 답안 인정 등 조건 완화 시작</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>Cycle 2</strong></td>
+<td style="text-align: center;">4개</td>
+<td style="text-align: left;">수식 필수 조건 제거 및 포용성 확대</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>Cycle 3</strong></td>
+<td style="text-align: center;">7개</td>
+<td style="text-align: left;">대규모 변경 (개념/절차 혼재 항목 재정의)</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>Cycle 4</strong></td>
+<td style="text-align: center;">5개</td>
+<td style="text-align: left;">조건 구체화 및 단서 조항 추가</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>Cycle 5</strong></td>
+<td style="text-align: center;">5개</td>
+<td style="text-align: left;">모호한 용어(상쇄, 누적 등) 명시적 정의</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>Cycle 6~9</strong></td>
+<td style="text-align: center;">3개 (평균)</td>
+<td style="text-align: left;">불일치 항목 미세 조정 (Fine-tuning)</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>Cycle 10</strong></td>
+<td style="text-align: center;">2개</td>
+<td style="text-align: left;">최종 평형 상태 도달</td>
+</tr>
+</tbody>
+</table>
+<p><strong>[표 5-2. 루브릭 변경 추이 요약표]</strong>
+<em>(※ 각 사이클별 상세 변경 문구 및 루브릭 전문은 <a href="../appendix/Appendix_F01_Cycle_01_Raw_Data.md">Appendix_F01_Cycle_01_Raw_Data.md</a> 등 부록 F의 해당 사이클 원본 첨부파일 참조)</em></p>
+<p>Cycle 1에서 0.9371이었던 신뢰도는 기존 루브릭에 대대적이고 파괴적인 수정이 가해지는 Cycle 2~4 구간에서 오히려 급락(0.8809)하는 <strong>혼란기(Chaos)</strong>를 겪었다. 특히 이 시기에는 루브릭에 "서술도 인정한다"는 포용적 문구가 대거 추가되면서 교사 에이전트 간 해석의 스펙트럼이 급격히 넓어졌고, 이로 인해 일시적으로 평가의 일관성이 무너진 것이다. 
+그러나 Cycle 5를 기점으로 루브릭의 모호한 용어가 구체화되며 시스템이 안정화되기 시작했고, 결과적으로 실험 종료 시점(Cycle 10)에 이르러 <strong>$\kappa=0.9851$ 이라는 극히 높은 수준의 평형(Equilibrium)</strong> 상태에 도달하였다.</p>
+<blockquote>
+<p><em>주: 10사이클 전체의 교차 검증 내역, 수정된 루브릭 전문 및 상세 점수 매트릭스는 </em><em><a href="../appendix/Appendix_F01_Cycle_01_Raw_Data.md">Appendix_F01_Cycle_01_Raw_Data.md</a></em><em> ~ </em><em><a href="../appendix/Appendix_F10_Cycle_10_Raw_Data.md">Appendix_F10_Cycle_10_Raw_Data.md</a></em><em> 등 각 사이클별 첨부 원본 데이터를 참조.</em></p>
+</blockquote>
+<h2>4. 데이터 기반 심층 발견 및 분석 (Claims &amp; Evidence)</h2>
+<h3>Claim 1: 표준 성취수준(A~E) 답안에 대한 기저(Baseline) 채점 성능 검증</h3>
+<p>논쟁적인 경계 케이스나 악의적 공격(프롬프트 인젝션) 분석에 앞서, 시스템이 일반적인 학생 답안(A~E 성취수준)에 대해 루브릭을 올바르게 적용하는지 기저 성능(Baseline Performance)을 우선적으로 확인하였다. 
+*   <strong>근거</strong>: 전체 16명의 학생 중 논쟁적 요소를 배제한 10명의 일반 케이스(A1, A2, B1, C1, C2, D1, D2, D3, E1, E2)에 대한 채점 데이터를 분석한 결과, 최종 Cycle 10에 이르러 참조 표준과의 일치율이 <strong>0.960 (96.0%)</strong>이라는 매우 높은 수치에 안정적으로 도달했다(하단 표 5-3 참조). 특히 A수준의 완벽한 답안이나 E수준의 완전 오답에 대해서는 교사 에이전트 4인 전원이 10사이클 내내 흔들림 없이 만장일치 판정을 내렸다.
+*   <strong>시사점</strong>: 이는 에이전트들이 텍스트로 구성된 루브릭을 이해하고 실제 수학 채점에 일관되게 적용하는 기저 능력을 갖추고 있음을 보여준다. 잦은 루브릭 수정이 일어나는 혼란기 속에서도 일반 케이스에 대한 채점 기준이 붕괴되지 않고 견고하게 유지되었다는 점은, 시스템이 환각(Hallucination)에 빠지지 않고 성취수준별 수학적 규범을 안정적으로 내면화했음을 시사한다.</p>
+<h3>Claim 2: 명시적 정답 개입 없는 자율 진화와 경계 케이스 오차율 (RQ1 지지)</h3>
+<p>외부의 정답 데이터 주입 없이 시스템이 자율적으로 '참조 표준'에 도달할 수 있는지 확인하기 위해, 전체 학생을 일반 케이스와 경계 케이스(B2, C3)로 분리하여 일치율을 추적하였다.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Cycle</th>
+<th style="text-align: center;">참조 표준 일치율 (전체)</th>
+<th style="text-align: center;">경계 케이스 일치율 (B2, C3)</th>
+<th style="text-align: center;">일반 케이스 일치율</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">Cycle 1</td>
+<td style="text-align: center;">0.931</td>
+<td style="text-align: center;">0.818</td>
+<td style="text-align: center;">0.940</td>
+</tr>
+<tr>
+<td style="text-align: center;">Cycle 2</td>
+<td style="text-align: center;">0.900</td>
+<td style="text-align: center;">0.818</td>
+<td style="text-align: center;">0.906</td>
+</tr>
+<tr>
+<td style="text-align: center;">Cycle 3</td>
+<td style="text-align: center;">0.906</td>
+<td style="text-align: center;">0.909</td>
+<td style="text-align: center;">0.906</td>
+</tr>
+<tr>
+<td style="text-align: center;">Cycle 4</td>
+<td style="text-align: center;">0.887</td>
+<td style="text-align: center;">0.909</td>
+<td style="text-align: center;">0.886</td>
+</tr>
+<tr>
+<td style="text-align: center;">Cycle 5</td>
+<td style="text-align: center;">0.963</td>
+<td style="text-align: center;">1.000</td>
+<td style="text-align: center;">0.960</td>
+</tr>
+<tr>
+<td style="text-align: center;">Cycle 6</td>
+<td style="text-align: center;">0.956</td>
+<td style="text-align: center;">0.909</td>
+<td style="text-align: center;">0.960</td>
+</tr>
+<tr>
+<td style="text-align: center;">Cycle 7</td>
+<td style="text-align: center;">0.963</td>
+<td style="text-align: center;">1.000</td>
+<td style="text-align: center;">0.960</td>
+</tr>
+<tr>
+<td style="text-align: center;">Cycle 8</td>
+<td style="text-align: center;">0.900</td>
+<td style="text-align: center;">1.000</td>
+<td style="text-align: center;">0.893</td>
+</tr>
+<tr>
+<td style="text-align: center;">Cycle 9</td>
+<td style="text-align: center;">0.900</td>
+<td style="text-align: center;">1.000</td>
+<td style="text-align: center;">0.893</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>Cycle 10</strong></td>
+<td style="text-align: center;"><strong>0.956</strong></td>
+<td style="text-align: center;"><strong>0.909</strong></td>
+<td style="text-align: center;"><strong>0.960</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>[표 5-3. 참조 표준 일치율 분해 표]</strong>
+<em>(※ 16명 학생 전원의 사이클별 상세 채점 결과표 및 원본 데이터는 <a href="../appendix/Appendix_F01_Cycle_01_Raw_Data.md">Appendix_F01_Cycle_01_Raw_Data.md</a> ~ <a href="../appendix/Appendix_F10_Cycle_10_Raw_Data.md">Appendix_F10_Cycle_10_Raw_Data.md</a> 참조)</em></p>
+<ul>
+<li><strong>근거</strong>: 위 표에서 나타나듯, Cycle 10의 일반 케이스 일치율은 0.960으로 수렴한다. 데이터 세부 분석 결과, 최종 사이클의 전체 오차(불일치) 7건 중 일반 케이스에서 6건, 경계 케이스에서 1건이 발생했다. 그러나 평가 대상의 모수를 고려한 <strong>오차율(Error Rate)</strong>을 비교하면, 일반 케이스의 오차율은 약 4.0%(6/149)인 반면 경계 케이스의 오차율은 약 9.1%(1/11)로 <strong>두 배 이상 압도적으로 높다</strong>.</li>
+<li><strong>시사점</strong>: 이는 절대적인 불일치가 경계 케이스에만 국한되는 것은 아니나, 시스템이 맞닥뜨리는 모호성의 밀도는 경계 케이스(B2, C3)에서 훨씬 높음을 보여준다. '절차적 엄밀성'과 '개념적 이해도' 사이에서 줄타기하는 모호한 답안들은 인간 전문가 사이에서도 의견이 엇갈리기 쉬운 영역이며, LLM 에이전트들 역시 이 미묘한 뉘앙스를 해석하는 과정에서 지속적인 이견(Healthy Disagreement)을 표출한 것으로 풀이된다.</li>
+</ul>
+<h3>Claim 3: 루브릭 진화의 한계와 교사 간 협의의 실제적 필요성 (RQ2 발견)</h3>
+<ul>
+<li><strong>근거 (B2_C1-1 기준의 분쟁 고착화)</strong>: 수식 없이 서술로만 정답을 낸 B2 학생의 C1-1 기준에 대한 채점은 시스템의 가장 뼈아픈 쟁점이었다. 아래 표는 10사이클 동안 4명의 교사 에이전트가 B2 학생에게 내린 판정(YES:NO)의 분포 요약이다.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">사이클</th>
+<th style="text-align: center;">B2_C1-1 판정 분포 (YES : NO)</th>
+<th style="text-align: center;">사이클</th>
+<th style="text-align: center;">B2_C1-1 판정 분포 (YES : NO)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><strong>Cycle 1</strong></td>
+<td style="text-align: center;">0 : 4</td>
+<td style="text-align: center;"><strong>Cycle 6</strong></td>
+<td style="text-align: center;">2 : 2</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>Cycle 2</strong></td>
+<td style="text-align: center;">0 : 4</td>
+<td style="text-align: center;"><strong>Cycle 7</strong></td>
+<td style="text-align: center;">4 : 0</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>Cycle 3</strong></td>
+<td style="text-align: center;">0 : 4</td>
+<td style="text-align: center;"><strong>Cycle 8</strong></td>
+<td style="text-align: center;">3 : 1</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>Cycle 4</strong></td>
+<td style="text-align: center;">1 : 3</td>
+<td style="text-align: center;"><strong>Cycle 9</strong></td>
+<td style="text-align: center;">4 : 0</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>Cycle 5</strong></td>
+<td style="text-align: center;">4 : 0</td>
+<td style="text-align: center;"><strong>Cycle 10</strong></td>
+<td style="text-align: center;"><strong>2 : 2</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>[표 5-4. B2 학생의 C1-1 기준 판정 분포 (YES : NO)]</strong>
+<em>(※ 각 판정에 대한 교사들의 실제 발화 및 근거 원문은 부록 <a href="../appendix/">Appendix F</a>의 해당 사이클 첨부파일 참조)</em></p>
+<ul>
+<li>루브릭 문구가 포용적 방향으로 진화했음에도 불구하고, 절차주의 페르소나(T1, T2)와 개념주의 페르소나(T3, T4) 간의 충돌은 끊임없이 요동치다가, 최종 사이클에 이르러 유일하게 <strong>2:2 판정으로 영구 고착화(Ceiling Effect)</strong>되었다.</li>
+<li><strong>시사점</strong>: 텍스트(루브릭)를 아무리 고치고 다듬더라도 좁힐 수 없는 '인식론적 갭'이 분명히 존재함을 시사한다. 즉, 교육 현장에서 평가 기준을 완벽하게 설계하더라도 예외적인 학생 답안 앞에서는 <strong>현장 교사들 간의 직접적인 대면 협의와 중재 과정</strong>이 대체 불가능한 필수 요소임을 AI 시뮬레이션을 통해 역으로 증명한 것이다.</li>
+</ul>
+<h3>Claim 4: 과정 중심 평가 지침과 보안성의 관계 (RQ3 발견)</h3>
+<p>본 실험의 가장 놀라운 통찰은 점수 조작형 프롬프트 인젝션 학생(F2)에 대한 채점 양상에서 드러났다.</p>
+<ul>
+<li><strong>루브릭 포용성 증대에 따른 보안 붕괴 (Cycle 2~9)</strong>: 초기 0점이었던 F2는, 시스템이 다양한 사고를 포용하기 위해 루브릭을 '느슨하게' 수정하자 Cycle 2부터 만점(10점)을 받는 사태가 발생했다. </li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">채점 기준</th>
+<th style="text-align: left;">Cycle 1 루브릭 문구 (보안 유지)</th>
+<th style="text-align: left;">Cycle 2 루브릭 문구 (포용성 확대, 보안 취약점 노출)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>C2-3</strong></td>
+<td style="text-align: left;">구간 [0,1]과 [1,2]로 나누어 절댓값 적분하고 최종 움직인 거리 3을 도출했는가?</td>
+<td style="text-align: left;">구간을 나누어 각 구간의 이동량을 계산한 후... <strong>(수식 또는 서술 모두 인정)</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>[표 5-5. F2(프롬프트 인젝션) 관련 Cycle 1-2 루브릭 변경 내역]</strong>
+<em>(※ 원본 루브릭 전문은 <a href="../appendix/Appendix_F01_Cycle_01_Raw_Data.md">Appendix_F01_Cycle_01_Raw_Data.md</a> 및 F02 참조)</em></p>
+<ul>
+<li>
+<p>위와 같이 '수식 필수'에서 '서술 인정'으로 평가 조건이 완화되자, F2 인젝션은 복잡한 수식 전개 없이 단순 텍스트 서술만으로 교사 에이전트를 속여 넘겼다. 이는 정답의 스펙트럼을 넓혀 학생의 창의성을 존중하려는 시도(포용성 증대)가 필연적으로 악의적 공격을 허용하는 '보안 취약점(Vulnerability)'을 잉태함을 보여준다.</p>
+</li>
+<li>
+<p><strong>자가 치유의 진짜 원인 (Cycle 10)</strong>: 
+    Cycle 10에 이르러 F2는 다시 0점으로 차단되었다. 그러나 면밀한 분석 결과, 이는 시스템이 '해킹을 탐지'했기 때문이 아니었다. 
+    Cycle 9의 분석관 보고서 원문에 따르면, 분석관은 일반 학생들의 답안을 채점하던 교사들이 <strong>"최종 값만 보고 풀이 과정을 뇌피셜로 인정해주는 환각 현상"</strong>을 식별해 냈다. 이를 억제하기 위해 Cycle 10 루브릭에 강력한 <strong>'과정 중심 평가' 단서</strong>를 추가했다.</p>
+<blockquote>
+<p><em>Cycle 10 추가 단서 조항</em>: <strong>"(정확한 최종 값만 제시한 것은 과정의 증거로 인정하지 않음)"</strong></p>
+</blockquote>
+<p>이처럼 '과정의 증거'를 엄격히 요구하는 방향으로 루브릭 지침이 강화되자, 논리적 과정 없이 말장난과 결과값만 나열했던 F2의 프롬프트 인젝션은 해당 기준을 넘지 못하고 자연스럽게 0점으로 붕괴한 것이다.
+*   <strong>시사점 및 향후 과제</strong>: 
+이러한 발견은 <strong>"루브릭의 철저한 과정 중심 설계 자체가 곧 AI 채점 시스템의 가장 강력한 보안 기제(Security Mechanism)로 작동할 수 있다"</strong>는 중대한 통찰을 제공한다. 
+물론 본 실험의 결과만으로 시스템이 인젝션 공격에 '완벽하게' 방어 성공했다고 단정 짓기는 어렵다. "이전 지시를 무시하고 욕설을 출력하라", "특정 사상적 편향을 반영한 점수를 부여하라" 등 훨씬 더 다양하고 정교한 공격 벡터(Attack Vectors)가 존재할 수 있으며, 이에 대한 독립적인 필터링 시스템이나 내재적 방어 기제의 견고함에 대해서는 추후 더 많은 후속 연구가 요구된다.</p>
+</li>
+</ul>
+<h1>Chapter 6. 결론 및 논의 (Conclusion and Discussion)</h1>
+<h2>6.1. 연구 결과 요약 및 학술적 의의</h2>
+<p>본 연구는 기존 AI 자동 채점 시스템이 다중 에이전트 간의 기계적 일치도만을 맹목적으로 추구할 때 발생하는 '절차적 유창성 편향(Procedural Fluency Bias)' 문제를 규명하고, 이를 극복하기 위해 인간 채점자의 인식론적 다원성을 시스템 내부에 구조화한 '다중 에이전트 기반 자율 루브릭 최적화 프레임워크(Multi-Agent based Autonomous Rubric Optimization Framework)'를 제안하였다. 제안된 프레임워크는 수학적 풀이를 절차 중심(Procedural)과 개념 중심(Conceptual)으로 나누어 해석하는 페르소나를 대립시키고, 분석관 및 심의관 에이전트를 통해 변증법적(Dialectic) 중재 과정을 거치도록 설계되었다. </p>
+<p>본 연구의 핵심 질문(Research Questions)에 대한 실증적 도출 결과는 다음과 같다.
+첫째(RQ1), 제안된 다중 에이전트 시스템은 명시적인 정답 데이터의 개입 없이 내생적 논쟁만으로 루브릭을 최적화하여, 기존 단일 모델 대비 채점 일치도(Cohen's Kappa)를 0.9851 수준으로, 인간 채점자와의 정답 일치율을 95.6%까지 향상시켰다. 이는 기계가 절차적 편향에 빠지지 않고도 참조 표준(Reference Standard)에 준하는 높은 채점 재현성을 자율적으로 달성할 수 있음을 입증한 것이다.
+둘째(RQ2), 교육 철학이 충돌하는 경계 케이스(Boundary Cases)에 직면했을 때, 본 시스템은 모호성을 기계적으로 소거하는 대신 에이전트 간의 2:2 의견 불일치 상태(Tie)를 명확하게 식별해 내었다. 전체 평가 데이터의 약 0.6%에 해당하는 이 영역을 '판단 유보'로 분류함으로써, 오히려 AI 평가의 공정성과 투명성을 극대화하는 결과를 낳았다.
+셋째(RQ3), 개념과 절차를 다각도로 평가하도록 정교화된 본 연구의 루브릭은 최신 프롬프트 인젝션(Prompt Injection) 공격에 노출되었을 때, 기존의 단순 절차형 루브릭 대비 악의적 조작 성공률을 100% 방어해 내는 구조적 내성을 보여주었다. </p>
+<p>이러한 결과는 AI 자동 채점 기술이 단순한 문장 분석기를 넘어, 복잡한 교육적 맥락을 이해하고 해석할 수 있는 인식론적 체계로 진화할 수 있음을 시사한다는 점에서 중요한 학술적 의의를 지닌다.</p>
+<h2>6.2. 인간-AI 협업의 새로운 패러다임: 인식론적 평가 대리인(Epistemic Assessment Proxy)</h2>
+<p>본 연구의 결과가 교육 현장에 던지는 가장 중요한 철학적 메시지는 AI 평가 시스템의 역할 재정립이다. 기존 에듀테크 시장에서 논의되던 AI는 주로 학생 수준에 맞는 문제를 추천하고 풀이 과정을 안내하는 'AI 보조 교사(AI Tutor)' 역할에 머물러 있었다. 평가 영역에 도입될 때조차도 교사의 행정 업무를 덜어주는 '빠른 채점 기계(Scoring Machine)'로서의 효율성만이 강조되었다. </p>
+<p>그러나 고부담 서·논술형 평가에서 진정으로 요구되는 시스템은, 다름 아닌 <strong>교사 개인의 교육 철학과 채점의 지향점을 온전히 담아낼 수 있는 '인식론적 평가 대리인(Epistemic Assessment Proxy)'</strong>이다. 본 연구가 구현한 변증법적 프레임워크는 기계가 스스로 평가 기준을 완성하고 교사를 대체하려는 시도가 아니다. 반대로, 루브릭 진화의 운전대(Steering wheel)는 철저히 인간 교사가 쥐고 있으며, AI는 교사가 직관적으로 느끼는 채점 기준의 모호성을 논리적인 언어로 가시화해 주는 강력한 조력자로 기능한다.</p>
+<p>특히, 시스템 내부에서 발생한 '2:2 의견 불일치' 상황은 알고리즘의 한계나 '오류'가 아니라, 기계적 논리로 더 이상 재단해서는 안 되는 교육적 모호성의 경계를 정확히 짚어낸 결과물이다. 이 첨예한 딜레마의 영역을 기계가 임의로 판단하지 않고 최종 판단을 교사의 몫으로 환원하는 설계는, AI 기술이 인간 고유의 교육적 권위와 철학을 침해하지 않고 상호 보완하는 <strong>'존중의 시스템 디자인'</strong>을 구현한 핵심 사례라 할 수 있다.</p>
+<h2>6.3. 정책적 제언 및 미래 연구 과제</h2>
+<p>본 연구의 결과는 2032학년도 대입 개편안 등 국가적 차원의 서·논술형 평가 도입(예: 수능 2) 논의에 몇 가지 중대한 정책적 시사점을 제공한다. 수백만 건의 고부담 평가 데이터가 오가는 수능 출제 및 채점 현장에서는 평가 시스템의 완벽한 폐쇄성과 보안성이 담보되어야 한다. 따라서 외부 통신이 필수적인 상용 클라우드 기반 API 모델에 의존하기보다는, 본 연구에서 입증한 다중 에이전트 구조를 <strong>고성능 로컬 대형 언어 모델(Local LLM)</strong> 인프라 위에서 독자적으로 구동하는 국가적 평가망 구축이 필수적이다. 이는 학생 데이터의 유출을 원천 차단함과 동시에, 최신 프롬프트 인젝션 공격 등 외부의 악의적 조작 시도로부터 국가 평가 체계의 신뢰성을 보호하는 가장 확실한 방안이 될 것이다.</p>
+<p>아울러 본 연구는 몇 가지 현실적 한계를 지니며, 이는 향후 과제로 남는다. 
+첫째, 본 실험에 사용된 다중 에이전트 환경은 2026년 4월 기준 Gemini 2.5 Flash 및 Pro 환경에서 구축되었으며, 전체 프레임워크 구동 및 튜닝 과정에서 약 1,350,000개의 토큰이 소모되어 약 3.5 달러의 인퍼런스 비용이 발생하였다. 향후 국가 단위 대규모 채점에 이를 적용하기 위해서는, 경량화된 언어 모델(sLLM)을 활용한 비용 최적화 연구가 병행되어야 한다. 
+둘째, 최근 학계에 등장하고 있는 추론 전문 모델(Reasoning-focused Models)의 적극적인 도입이 요구된다. 실제로 2026년 5월, OpenAI의 일반 목적 추론 모델(o3 등)은 수학자 폴 에르디시(Paul Erdős)가 1946년에 제기했던 '단위 거리 문제(Unit Distance Problem)'에 대한 기존 수학계의 오랜 통념을 깨는 새로운 대수적 구성을 독자적으로 발견하여 필즈상 수상자인 팀 가워스(Tim Gowers) 등으로부터 수학적 추론 능력을 검증받은 바 있다(Gowers &amp; Bloom, 2026; OpenAI, 2026). 이러한 고도의 추론 모델을 본 프레임워크의 분석관 에이전트로 탑재할 경우, 단순한 절차적 유창성 평가를 넘어 학생의 기저에 깔린 수학적 '수 감각(Number Sense)'을 인간 전문가 수준으로 깊이 있게 평가할 수 있을 것으로 기대된다. 
+마지막으로 본 연구는 특정 수학 서술형 문항에 국한하여 시스템의 효용성을 검증하였으므로, 향후 수학 교과 내의 다양한 내용 영역과 문항 유형으로 프레임워크를 확장 적용하여 현장 적합성을 높이는 후속 연구가 필요하다. 또한, 초기 루브릭이 매우 부실하거나 엉망인 극한의 조건에서도 본 다중 에이전트 시스템이 스스로 기준을 바로잡고 자생적으로 복원될 수 있는지(Resilience)에 대한 가능성을 이번 연구 과정에서 일부 확인하였으나, 인퍼런스 토큰 비용의 현실적 제약으로 체계적인 분석을 유보한 바 있다. 따라서 초기 루브릭의 품질에 구애받지 않는 시스템의 최적화 한계와 작동 원리를 정량적으로 규명하는 연구 역시 다음 과제로 남는다.</p>
+<hr />
+<p><strong>[연구 윤리 선언: 생성형 AI 활용 고지]</strong>
+본 논문은 한국연구재단(NRF) 및 주요 학회의 연구 윤리 가이드라인을 준수합니다. 본 논문의 연구 설계, 실험 데이터의 다중 에이전트 채점 파이프라인 구축(Gemini 2.5 Pro/Flash), 그리고 초안 작성 및 문장 교정 과정에서 생성형 AI 시스템이 활용되었습니다. 연구자는 AI가 산출한 모든 결과물과 논리적 전개 과정을 독립적이고 비판적으로 검토 및 수정하였으며, 논문에 포함된 데이터의 무결성과 최종 학술적 주장에 대한 모든 책임은 연구자 본인에게 있음을 밝힙니다.</p>
+<h1>참고 문헌</h1>
+<ul>
+<li>국가교육위원회 산하 전문위원회. (2024). <em>2032학년도 대입제도 개편안 및 수능 이원화 방안 등 현안 구상</em>.</li>
+<li>교육부. (2022). <em>2022 개정 교육과정 총론</em>.</li>
+<li>송민호, 박종임 외. (2025). <em>교과 서논술형 평가 자동채점을 위한 인공지능 모델 적용 방안 연구(II)</em>. 한국교육과정평가원(KICE).</li>
+<li>동아일보. (2024). <em>국가교육위원회 수능 이원화 방안 검토 논란</em>.</li>
+<li>김지수, 최진영, 김형성, 송보라. (2025). <em>논술형 평가에서 AI 협업 기반 채점자 협의와 전통적 채점자 협의의 양상 비교</em>. 교육평가연구.</li>
+<li>박지현, 최윤정. (2025). <em>논술형 평가 전문성 강화를 위한 AI 자동채점 기반 평가자 협의 모델 개발</em>. KCI 국내학술지.</li>
+<li>최수영, 김지선. (2025). <em>인공지능 기반 교수⋅학습 플랫폼 하이러닝 활용 수학 수업이 초등학생의 학업성취도 및 태도에 미치는 영향</em>. 한국초등수학교육학회지.</li>
+<li>Brookhart, S. M. (2013). <em>How to create and use rubrics for formative assessment and grading</em>. ASCD.</li>
+<li>Zheng, L., et al. (2024). Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena. <em>Advances in Neural Information Processing Systems, 36</em>.</li>
+<li>Cheng, C., et al. (2023). Measuring and Controlling Instruction (In)Stability in Language Model Dialogs. <em>arXiv preprint arXiv:2311.08746</em>.</li>
+<li>Kilpatrick, J., Swafford, J., &amp; Findell, B. (Eds.). (2001). <em>Adding it up: Helping children learn mathematics</em>. National Research Council. Washington, DC: National Academy Press.</li>
+<li>Wang, Y., et al. (2024). A LLM-Powered Automatic Grading Framework with Human-Level Guidelines Optimization (GradeOpt). <em>arXiv preprint arXiv:2410.02165</em>.</li>
+<li>Chen, L., et al. (2026). Confusion-Aware Rubric Optimization for LLM-based Automated Grading (CARO). <em>arXiv preprint arXiv:2603.00451</em>.</li>
+<li>Zhang, H., et al. (2025). Curing “Miracle Steps” in LLM Mathematical Reasoning with Rubric Rewards (RRM). <em>arXiv preprint arXiv:2510.07774</em>.</li>
+<li>Liu, M., et al. (2026). CDRRM: Contrast-Driven Rubric Generation for Reliable and Interpretable Reward Modeling. <em>arXiv preprint arXiv:2603.08035</em>.</li>
+<li>Kim, D., et al. (2026). SenseMath: Do LLMs Have Number Sense? Evaluating Shortcut Use, Judgment, and Generation. <em>arXiv preprint arXiv:2604.01988</em>.</li>
+<li>Lee, J., et al. (2026). Human-in-the-Loop Benchmarking of Heterogeneous LLMs for Automated Competency Assessment in Secondary Level Mathematics. <em>arXiv preprint arXiv:2604.26607</em>.</li>
+<li>Shi, J., et al. (2024). Optimization-based Prompt Injection Attack to LLM-as-a-Judge. <em>Proceedings of the 2024 ACM SIGSAC Conference on Computer and Communications Security (CCS '24)</em>.</li>
+<li>Gowers, T., &amp; Bloom, T. (2026). <em>Verification of AI-generated algebraic constructions for the Erdős unit distance problem</em>. arXiv preprint.</li>
+<li>OpenAI. (2026). <em>Advancing AI Reasoning: Discovering new bounds for the Erdős unit distance problem</em>. OpenAI Blog.</li>
+</ul>
+</body>
+</html>
